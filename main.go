@@ -92,6 +92,27 @@ func parseEvent(event string, data []byte, creds Credentials) {
 		))
 
 		executeWebhook(builder.String(), e.Pusher.Name, e.Sender.AvatarUrl, creds)
+	case "workflow_run":
+		e := events.WorkflowRun{}
+		err := parseJSON(data, &e)
+		if err != nil {
+			log.Print(err)
+			return
+		}
+
+		if e.Action != "completed" {
+			return
+		}
+
+		content := fmt.Sprintf("Workflow %s on [%s](<%s>)/[%s](<%s>)",
+			e.WorkflowRun.Conclusion,
+			e.Repository.Name,
+			e.Repository.Url,
+			e.WorkflowRun.HeadBranch,
+			e.Repository.Url+"/tree/"+e.WorkflowRun.HeadBranch,
+		)
+
+		executeWebhook(content, e.Workflow.Name, e.Sender.AvatarUrl, creds)
 	}
 }
 
