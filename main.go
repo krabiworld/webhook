@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"log/slog"
 	"net/http"
 	"strings"
@@ -47,21 +46,21 @@ func main() {
 		defer func(Body io.ReadCloser) {
 			err := Body.Close()
 			if err != nil {
-				log.Print(err)
+				slog.Error(err.Error())
 			}
 		}(r.Body)
 
 		bodyBytes, err := io.ReadAll(r.Body)
 		if err != nil {
-			log.Print(err)
+			slog.Error(err.Error())
 		}
 
 		go parseEvent(event, bodyBytes, creds)
 		w.WriteHeader(204)
 	})
 
-	log.Print("Starting server")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	slog.Info("Starting server")
+	slog.Error(http.ListenAndServe(":8080", nil).Error())
 }
 
 func parseEvent(event string, data []byte, creds Credentials) {
@@ -127,7 +126,7 @@ func executeWebhook(content, username, avatar string, creds Credentials) {
 
 	bodyBytes, err := json.Marshal(body)
 	if err != nil {
-		log.Print(err)
+		slog.Error(err.Error())
 		return
 	}
 
@@ -135,16 +134,17 @@ func executeWebhook(content, username, avatar string, creds Credentials) {
 
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(bodyBytes))
 	if err != nil {
-		log.Print(err)
+		slog.Error(err.Error())
+		return
 	}
 
 	if resp.StatusCode != 204 {
 		respBody, err := io.ReadAll(resp.Body)
 		if err != nil {
-			log.Print(err)
+			slog.Error(err.Error())
 		}
 
-		log.Printf("Discord Error: %s", respBody)
+		slog.Error("discord error", "err", respBody)
 	}
 }
 
