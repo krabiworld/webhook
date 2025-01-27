@@ -7,7 +7,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 	"webhook/events"
 )
@@ -18,14 +17,25 @@ type Discord struct {
 	AvatarURL string `json:"avatar_url"`
 }
 
-const githubEvent = "X-GitHub-Event"
+type Credentials struct {
+	ID    string
+	Token string
+}
 
-var discordWebhookURL = os.Getenv("DISCORD_WEBHOOK")
+const (
+	discordBaseURL = "https://discord.com/api"
+	githubEvent    = "X-GitHub-Event"
+)
 
 func main() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/{id}/{token}", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			return
+		}
+
+		creds := Credentials{
+			ID:    r.PathValue("id"),
+			Token: r.PathValue("token"),
 		}
 
 		event := r.Header.Get(githubEvent)
@@ -45,7 +55,7 @@ func main() {
 			log.Print(err)
 		}
 
-		go parseEvent(event, bodyBytes)
+		go parseEvent(event, bodyBytes, creds)
 		w.WriteHeader(204)
 	})
 
@@ -53,7 +63,7 @@ func main() {
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
-func parseEvent(event string, data []byte) {
+func parseEvent(event string, data []byte, creds Credentials) {
 	switch event {
 	case "push":
 		e := events.Push{}
@@ -81,11 +91,11 @@ func parseEvent(event string, data []byte) {
 			e.Repository.Url+"/tree/"+branch,
 		))
 
-		executeWebhook(builder.String(), e.Pusher.Name, e.Sender.AvatarUrl)
+		executeWebhook(builder.String(), e.Pusher.Name, e.Sender.AvatarUrl, creds)
 	}
 }
 
-func executeWebhook(content, username, avatar string) {
+func executeWebhook(content, username, avatar string, creds Credentials) {
 	body := Discord{
 		Content:   content,
 		Username:  username,
@@ -98,7 +108,9 @@ func executeWebhook(content, username, avatar string) {
 		return
 	}
 
-	resp, err := http.Post(discordWebhookURL, "application/json", bytes.NewBuffer(bodyBytes))
+	url := fmt.Sprintf("%s/webhooks/%s/%s", discordBaseURL, creds.ID, creds.Token)
+
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(bodyBytes))
 	if err != nil {
 		log.Print(err)
 	}
