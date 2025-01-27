@@ -104,12 +104,13 @@ func parseEvent(event string, data []byte, creds Credentials) {
 			return
 		}
 
-		content := fmt.Sprintf("Workflow %s on [%s](<%s>)/[%s](<%s>)",
+		content := fmt.Sprintf("Workflow [%s](<%s>) on [%s](<%s>)/[%s](<%s>)",
 			e.WorkflowRun.Conclusion,
+			e.WorkflowRun.HtmlUrl,
 			e.Repository.Name,
-			e.Repository.Url,
+			e.Repository.HtmlUrl,
 			e.WorkflowRun.HeadBranch,
-			e.Repository.Url+"/tree/"+e.WorkflowRun.HeadBranch,
+			e.Repository.HtmlUrl+"/tree/"+e.WorkflowRun.HeadBranch,
 		)
 
 		executeWebhook(content, e.Workflow.Name, e.Sender.AvatarUrl, creds)
