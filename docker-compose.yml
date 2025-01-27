@@ -1,0 +1,18 @@
+services:
+  foxogram-webhook:
+    container_name: foxogram-webhook
+    build:
+      context: .
+    restart: always
+    networks:
+      - traefik
+    labels:
+      traefik.enable: true
+      traefik.http.routers.foxogram-webhook.rule: Host(`webhook.foxogram.su`)
+      traefik.http.routers.foxogram-webhook.tls.certresolver: letsencrypt
+      traefik.http.services.foxogram-webhook.loadbalancer.server.port: 8080
+      traefik.http.routers.foxogram-webhook.middlewares: ratelimit@file
+
+networks:
+  traefik:
+    external: true
