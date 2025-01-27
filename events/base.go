@@ -67,9 +67,9 @@ type Repository struct {
 	LabelsUrl        string      `json:"labels_url"`
 	ReleasesUrl      string      `json:"releases_url"`
 	DeploymentsUrl   string      `json:"deployments_url"`
-	CreatedAt        int64       `json:"created_at"`
-	UpdatedAt        string      `json:"updated_at"`
-	PushedAt         int64       `json:"pushed_at"`
+	CreatedAt        interface{} `json:"created_at"`
+	UpdatedAt        interface{} `json:"updated_at"`
+	PushedAt         interface{} `json:"pushed_at"`
 	GitUrl           string      `json:"git_url"`
 	SshUrl           string      `json:"ssh_url"`
 	CloneUrl         string      `json:"clone_url"`

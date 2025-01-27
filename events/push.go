@@ -30,12 +30,12 @@ type Push struct {
 	BaseRef interface{} `json:"base_ref"`
 	Compare string      `json:"compare"`
 	Commits []struct {
-		Id        string `json:"id"`
-		TreeId    string `json:"tree_id"`
-		Distinct  bool   `json:"distinct"`
-		Message   string `json:"message"`
-		Timestamp string `json:"timestamp"`
-		Url       string `json:"url"`
+		Id        string      `json:"id"`
+		TreeId    string      `json:"tree_id"`
+		Distinct  bool        `json:"distinct"`
+		Message   string      `json:"message"`
+		Timestamp interface{} `json:"timestamp"`
+		Url       string      `json:"url"`
 		Author    struct {
 			Name     string `json:"name"`
 			Email    string `json:"email"`
@@ -51,12 +51,12 @@ type Push struct {
 		Modified []string      `json:"modified"`
 	} `json:"commits"`
 	HeadCommit struct {
-		Id        string `json:"id"`
-		TreeId    string `json:"tree_id"`
-		Distinct  bool   `json:"distinct"`
-		Message   string `json:"message"`
-		Timestamp string `json:"timestamp"`
-		Url       string `json:"url"`
+		Id        string      `json:"id"`
+		TreeId    string      `json:"tree_id"`
+		Distinct  bool        `json:"distinct"`
+		Message   string      `json:"message"`
+		Timestamp interface{} `json:"timestamp"`
+		Url       string      `json:"url"`
 		Author    struct {
 			Name     string `json:"name"`
 			Email    string `json:"email"`
