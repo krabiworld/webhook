@@ -1,7 +1,5 @@
 package events
 
-import "time"
-
 type Repository struct {
 	Id       int    `json:"id"`
 	NodeId   string `json:"node_id"`
@@ -69,9 +67,9 @@ type Repository struct {
 	LabelsUrl        string      `json:"labels_url"`
 	ReleasesUrl      string      `json:"releases_url"`
 	DeploymentsUrl   string      `json:"deployments_url"`
-	CreatedAt        time.Time   `json:"created_at"`
-	UpdatedAt        time.Time   `json:"updated_at"`
-	PushedAt         time.Time   `json:"pushed_at"`
+	CreatedAt        int64       `json:"created_at"`
+	UpdatedAt        string      `json:"updated_at"`
+	PushedAt         int64       `json:"pushed_at"`
 	GitUrl           string      `json:"git_url"`
 	SshUrl           string      `json:"ssh_url"`
 	CloneUrl         string      `json:"clone_url"`

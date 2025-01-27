@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"log/slog"
 	"net/http"
 	"strings"
 	"webhook/events"
@@ -39,7 +40,7 @@ func main() {
 		}
 
 		event := r.Header.Get(githubEvent)
-		if strings.TrimSpace(event) == "" {
+		if strings.TrimSpace(creds.ID) == "" || strings.TrimSpace(creds.Token) == "" || strings.TrimSpace(event) == "" {
 			return
 		}
 
@@ -69,7 +70,7 @@ func parseEvent(event string, data []byte, creds Credentials) {
 		e := events.Push{}
 		err := parseJSON(data, &e)
 		if err != nil {
-			log.Print(err)
+			slog.Error(err.Error())
 			return
 		}
 
@@ -96,7 +97,7 @@ func parseEvent(event string, data []byte, creds Credentials) {
 		e := events.WorkflowRun{}
 		err := parseJSON(data, &e)
 		if err != nil {
-			log.Print(err)
+			slog.Error(err.Error())
 			return
 		}
 

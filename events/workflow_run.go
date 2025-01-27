@@ -1,7 +1,5 @@
 package events
 
-import "time"
-
 type WorkflowRun struct {
 	Action      string `json:"action"`
 	WorkflowRun struct {
@@ -22,12 +20,12 @@ type WorkflowRun struct {
 		Url                 string        `json:"url"`
 		HtmlUrl             string        `json:"html_url"`
 		PullRequests        []interface{} `json:"pull_requests"`
-		CreatedAt           time.Time     `json:"created_at"`
-		UpdatedAt           time.Time     `json:"updated_at"`
+		CreatedAt           string        `json:"created_at"`
+		UpdatedAt           string        `json:"updated_at"`
 		Actor               Actor         `json:"actor"`
 		RunAttempt          int           `json:"run_attempt"`
 		ReferencedWorkflows []interface{} `json:"referenced_workflows"`
-		RunStartedAt        time.Time     `json:"run_started_at"`
+		RunStartedAt        string        `json:"run_started_at"`
 		TriggeringActor     struct {
 			Login             string `json:"login"`
 			Id                int    `json:"id"`
@@ -58,10 +56,10 @@ type WorkflowRun struct {
 		PreviousAttemptUrl interface{} `json:"previous_attempt_url"`
 		WorkflowUrl        string      `json:"workflow_url"`
 		HeadCommit         struct {
-			Id        string    `json:"id"`
-			TreeId    string    `json:"tree_id"`
-			Message   string    `json:"message"`
-			Timestamp time.Time `json:"timestamp"`
+			Id        string `json:"id"`
+			TreeId    string `json:"tree_id"`
+			Message   string `json:"message"`
+			Timestamp string `json:"timestamp"`
 			Author    struct {
 				Name  string `json:"name"`
 				Email string `json:"email"`
@@ -142,16 +140,16 @@ type WorkflowRun struct {
 		} `json:"head_repository"`
 	} `json:"workflow_run"`
 	Workflow struct {
-		Id        int       `json:"id"`
-		NodeId    string    `json:"node_id"`
-		Name      string    `json:"name"`
-		Path      string    `json:"path"`
-		State     string    `json:"state"`
-		CreatedAt time.Time `json:"created_at"`
-		UpdatedAt time.Time `json:"updated_at"`
-		Url       string    `json:"url"`
-		HtmlUrl   string    `json:"html_url"`
-		BadgeUrl  string    `json:"badge_url"`
+		Id        int    `json:"id"`
+		NodeId    string `json:"node_id"`
+		Name      string `json:"name"`
+		Path      string `json:"path"`
+		State     string `json:"state"`
+		CreatedAt string `json:"created_at"`
+		UpdatedAt string `json:"updated_at"`
+		Url       string `json:"url"`
+		HtmlUrl   string `json:"html_url"`
+		BadgeUrl  string `json:"badge_url"`
 	} `json:"workflow"`
 	Repository   Repository   `json:"repository"`
 	Organization Organization `json:"organization"`
