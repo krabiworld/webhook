@@ -15,4 +15,4 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Run Webhook
-        run: docker compose up -e DISCORD_WEBHOOK ${{ secrets.DISCORD_WEBHOOK }} -d --build
+        run: DISCORD_WEBHOOK=${{ secrets.DISCORD_WEBHOOK }} docker compose up -d --build
