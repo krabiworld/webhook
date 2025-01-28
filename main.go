@@ -134,6 +134,22 @@ func parseEvent(event string, data []byte, creds Credentials) {
 		)
 
 		executeWebhook(content, e.Sender.Login, e.Sender.AvatarUrl, creds)
+	case "fork":
+		e := events.Fork{}
+		err := parseJSON(data, &e)
+		if err != nil {
+			slog.Error(err.Error())
+			return
+		}
+
+		content := fmt.Sprintf("[%s](<%s>) forked [%s](<%s>)",
+			e.Sender.Login,
+			e.Sender.HtmlUrl,
+			e.Forkee.Name,
+			e.Forkee.HtmlUrl,
+		)
+
+		executeWebhook(content, e.Sender.Login, e.Sender.AvatarUrl, creds)
 	}
 }
 
