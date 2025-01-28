@@ -86,9 +86,9 @@ func parseEvent(event string, data []byte, creds Credentials) {
 			e.Pusher.Name,
 			e.Sender.Url,
 			e.Repository.Name,
-			e.Repository.Url,
+			e.Repository.HtmlUrl,
 			branch,
-			e.Repository.Url+"/tree/"+branch,
+			e.Repository.HtmlUrl+"/tree/"+branch,
 		))
 
 		executeWebhook(builder.String(), e.Pusher.Name, e.Sender.AvatarUrl, creds)
@@ -114,6 +114,26 @@ func parseEvent(event string, data []byte, creds Credentials) {
 		)
 
 		executeWebhook(content, e.Workflow.Name, e.Sender.AvatarUrl, creds)
+	case "star":
+		e := events.Star{}
+		err := parseJSON(data, &e)
+		if err != nil {
+			slog.Error(err.Error())
+			return
+		}
+
+		if e.Action != "created" {
+			return
+		}
+
+		content := fmt.Sprintf("[%s](<%s>) starred [%s](<%s>) <:foxtada:1311327105300172882>",
+			e.Sender.Login,
+			e.Sender.HtmlUrl,
+			e.Repository.Name,
+			e.Repository.HtmlUrl,
+		)
+
+		executeWebhook(content, e.Sender.Login, e.Sender.AvatarUrl, creds)
 	}
 }
 
