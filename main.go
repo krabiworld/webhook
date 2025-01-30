@@ -104,7 +104,7 @@ func parseEvent(event string, data []byte, creds Credentials) {
 			return
 		}
 
-		content := fmt.Sprintf("Workflow [%s](<%s>) on [%s](<%s>)/[%s](<%s>)",
+		content := fmt.Sprintf("<:pepethinking:1330806911141941249> Workflow [%s](<%s>) on [%s](<%s>)/[%s](<%s>)",
 			e.WorkflowRun.Conclusion,
 			e.WorkflowRun.HtmlUrl,
 			e.Repository.Name,
