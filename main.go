@@ -104,7 +104,14 @@ func parseEvent(event string, data []byte, creds Credentials) {
 			return
 		}
 
-		content := fmt.Sprintf("<:pepethinking:1330806911141941249> Workflow [%s](<%s>) on [%s](<%s>)/[%s](<%s>)",
+		emoji := "<:pepethinking:1330806911141941249>"
+
+		if e.WorkflowRun.Conclusion == "failure" {
+			emoji = "<:catscream:1325122976575655936>"
+		}
+
+		content := fmt.Sprintf("%s Workflow [%s](<%s>) on [%s](<%s>)/[%s](<%s>)",
+			emoji,
 			e.WorkflowRun.Conclusion,
 			e.WorkflowRun.HtmlUrl,
 			e.Repository.Name,
