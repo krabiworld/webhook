@@ -64,6 +64,8 @@ func main() {
 }
 
 func parseEvent(event string, data []byte, creds Credentials) {
+	var content, username, avatar string
+
 	switch event {
 	case "push":
 		e := events.Push{}
@@ -91,7 +93,7 @@ func parseEvent(event string, data []byte, creds Credentials) {
 			e.Repository.HtmlUrl+"/tree/"+branch,
 		))
 
-		executeWebhook(builder.String(), e.Pusher.Name, e.Sender.AvatarUrl, creds)
+		content, username, avatar = builder.String(), e.Pusher.Name, e.Sender.AvatarUrl
 	case "workflow_run":
 		e := events.WorkflowRun{}
 		err := parseJSON(data, &e)
@@ -110,7 +112,7 @@ func parseEvent(event string, data []byte, creds Credentials) {
 			emoji = "<:catscream:1325122976575655936>"
 		}
 
-		content := fmt.Sprintf("%s Workflow [%s](<%s>) on [%s](<%s>)/[%s](<%s>)",
+		formattedContent := fmt.Sprintf("%s Workflow [%s](<%s>) on [%s](<%s>)/[%s](<%s>)",
 			emoji,
 			e.WorkflowRun.Conclusion,
 			e.WorkflowRun.HtmlUrl,
@@ -120,7 +122,7 @@ func parseEvent(event string, data []byte, creds Credentials) {
 			e.Repository.HtmlUrl+"/tree/"+e.WorkflowRun.HeadBranch,
 		)
 
-		executeWebhook(content, e.Workflow.Name, e.Sender.AvatarUrl, creds)
+		content, username, avatar = formattedContent, e.Workflow.Name, e.Sender.AvatarUrl
 	case "star":
 		e := events.Star{}
 		err := parseJSON(data, &e)
@@ -133,14 +135,14 @@ func parseEvent(event string, data []byte, creds Credentials) {
 			return
 		}
 
-		content := fmt.Sprintf("[%s](<%s>) starred [%s](<%s>) <:foxtada:1311327105300172882>",
+		formattedContent := fmt.Sprintf("[%s](<%s>) starred [%s](<%s>) <:foxtada:1311327105300172882>",
 			e.Sender.Login,
 			e.Sender.HtmlUrl,
 			e.Repository.Name,
 			e.Repository.HtmlUrl,
 		)
 
-		executeWebhook(content, e.Sender.Login, e.Sender.AvatarUrl, creds)
+		content, username, avatar = formattedContent, e.Sender.Login, e.Sender.AvatarUrl
 	case "fork":
 		e := events.Fork{}
 		err := parseJSON(data, &e)
@@ -149,15 +151,17 @@ func parseEvent(event string, data []byte, creds Credentials) {
 			return
 		}
 
-		content := fmt.Sprintf("[%s](<%s>) forked [%s](<%s>)",
+		formattedContent := fmt.Sprintf("[%s](<%s>) forked [%s](<%s>)",
 			e.Sender.Login,
 			e.Sender.HtmlUrl,
 			e.Forkee.Name,
 			e.Forkee.HtmlUrl,
 		)
 
-		executeWebhook(content, e.Sender.Login, e.Sender.AvatarUrl, creds)
+		content, username, avatar = formattedContent, e.Sender.Login, e.Sender.AvatarUrl
 	}
+
+	executeWebhook(content, username, avatar, creds)
 }
 
 func executeWebhook(content, username, avatar string, creds Credentials) {
