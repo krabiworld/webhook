@@ -86,7 +86,7 @@ func parseEvent(event string, data []byte, creds Credentials) {
 		builder.WriteString(fmt.Sprintf(
 			"\n- [%s](<%s>) on [%s](<%s>)/[%s](<%s>)",
 			e.Pusher.Name,
-			e.Sender.Url,
+			e.Sender.HtmlUrl,
 			e.Repository.Name,
 			e.Repository.HtmlUrl,
 			branch,
@@ -108,18 +108,18 @@ func parseEvent(event string, data []byte, creds Credentials) {
 
 		emoji := "<:pepethinking:1330806911141941249>"
 
-		if e.WorkflowRun.Conclusion == "failure" {
+		if *e.WorkflowRun.Conclusion == "failure" {
 			emoji = "<:catscream:1325122976575655936>"
 		}
 
 		formattedContent := fmt.Sprintf("%s Workflow [%s](<%s>) on [%s](<%s>)/[%s](<%s>)",
 			emoji,
-			e.WorkflowRun.Conclusion,
+			*e.WorkflowRun.Conclusion,
 			e.WorkflowRun.HtmlUrl,
 			e.Repository.Name,
 			e.Repository.HtmlUrl,
-			e.WorkflowRun.HeadBranch,
-			e.Repository.HtmlUrl+"/tree/"+e.WorkflowRun.HeadBranch,
+			*e.WorkflowRun.HeadBranch,
+			e.Repository.HtmlUrl+"/tree/"+*e.WorkflowRun.HeadBranch,
 		)
 
 		content, username, avatar = formattedContent, e.Workflow.Name, e.Sender.AvatarUrl
