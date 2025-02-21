@@ -106,6 +106,10 @@ func parseEvent(event string, data []byte, creds Credentials) {
 			return
 		}
 
+		if (strings.HasPrefix(e.Workflow.Name, "CodeQL") || e.Workflow.Name == "Dependabot Updates") && *e.WorkflowRun.Conclusion == "success" {
+			return
+		}
+
 		emoji := "<:pepethinking:1330806911141941249>"
 
 		if *e.WorkflowRun.Conclusion == "failure" {
