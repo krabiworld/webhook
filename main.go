@@ -7,6 +7,7 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
+	"regexp"
 	"strings"
 	"webhook/events"
 )
@@ -75,15 +76,21 @@ func parseEvent(event string, data []byte, creds Credentials) {
 			return
 		}
 
+		re := regexp.MustCompile(`(?m)^\s*\n`)
 		builder := strings.Builder{}
 
 		for _, c := range e.Commits {
-			builder.WriteString(fmt.Sprintf("[`%s`](<%s>) %s\n", c.Id[:7], c.Url, c.Message))
+			builder.WriteString(fmt.Sprintf(
+				"[`%s`](<%s>) %s\n",
+				c.Id[:7],
+				c.Url,
+				re.ReplaceAllString(c.Message, ""),
+			))
 		}
 
 		branch := strings.TrimPrefix(e.Ref, "refs/heads/")
 
-		builder.WriteString(fmt.Sprintf(
+		footer := []rune(fmt.Sprintf(
 			"\n- [%s](<%s>) on [%s](<%s>)/[%s](<%s>)",
 			e.Pusher.Name,
 			e.Sender.HtmlUrl,
@@ -92,6 +99,16 @@ func parseEvent(event string, data []byte, creds Credentials) {
 			branch,
 			e.Repository.HtmlUrl+"/tree/"+branch,
 		))
+		suffix := "..."
+
+		commits := []rune(builder.String())
+		contentLen := 2000 - (len(footer) + len(suffix))
+		builder.Reset()
+		if len(commits) > contentLen {
+			builder.WriteString(string(commits[:contentLen]) + suffix)
+		}
+
+		builder.WriteString(string(footer))
 
 		content, username, avatar = builder.String(), e.Pusher.Name, e.Sender.AvatarUrl
 	case "workflow_run":
