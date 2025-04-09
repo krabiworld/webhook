@@ -102,10 +102,18 @@ func parseEvent(event string, data []byte, creds Credentials) {
 		suffix := "..."
 
 		commits := []rune(builder.String())
-		contentLen := 2000 - (len(footer) + len(suffix))
+		contentLen := 2000 - ((len(footer) + len(suffix)) + 1)
 		builder.Reset()
 		if len(commits) > contentLen {
-			builder.WriteString(string(commits[:contentLen]) + suffix)
+			commitsStr := string(commits[:contentLen]) + suffix
+			if commitsStr[len(commitsStr)-2:] != ">)" {
+				lines := strings.Split(commitsStr, "\n")
+				lines = lines[:len(lines)-1]
+				commitsStr = strings.Join(lines, "\n")
+			}
+			builder.WriteString(commitsStr + "\n")
+		} else {
+			builder.WriteString(string(commits))
 		}
 
 		builder.WriteString(string(footer))
