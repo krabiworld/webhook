@@ -1,9 +1,12 @@
-FROM golang:alpine AS build
+FROM rust:slim AS build
+RUN apt update && apt install -y \
+    pkg-config \
+    libssl-dev \
+    && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY . .
-RUN go mod download
-RUN CGO_ENABLED=0 go build -o webhook
+RUN cargo build --release && strip target/release/webhook
 
-FROM gcr.io/distroless/static-debian12
-COPY --from=build /app/webhook .
+FROM gcr.io/distroless/cc-debian12
+COPY --from=build /app/target/release/webhook .
 CMD ["./webhook"]

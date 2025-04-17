@@ -1,0 +1,19 @@
+# Rust
+target
+
+# IDE
+.idea
+.vscode
+
+# Git
+.github
+.gitignore
+
+# Docker
+docker-compose.yml
+
+# macOS
+.DS_Store
+
+# Misc
+README.md
