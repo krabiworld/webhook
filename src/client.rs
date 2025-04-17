@@ -2,11 +2,11 @@ use log::error;
 use crate::DISCORD_BASE_URL;
 use crate::structs::{Credentials, Discord};
 
-pub async fn execute_webhook(content: String, username: String, avatar: String, creds: Credentials) {
+pub async fn execute_webhook(content: String, username: String, avatar_url: String, creds: Credentials) {
     let body = Discord {
-        content: content.to_string(),
-        username: username.to_string(),
-        avatar_url: avatar.to_string(),
+        content,
+        username,
+        avatar_url,
     };
 
     let url = format!(

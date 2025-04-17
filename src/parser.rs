@@ -48,8 +48,8 @@ pub async fn parse_event(event: String, body: web::Bytes, creds: Credentials) {
                     }
 
                     content = format!("{}{}", commits, footer);
-                    username = e.pusher.name.to_string();
-                    avatar = e.sender.avatar_url.to_string();
+                    username = e.pusher.name;
+                    avatar = e.sender.avatar_url;
                 }
                 Err(err) => {
                     error!("{}", err);
@@ -90,8 +90,8 @@ pub async fn parse_event(event: String, body: web::Bytes, creds: Credentials) {
                         );
 
                         content = formatted;
-                        username = e.workflow.name.clone();
-                        avatar = e.sender.avatar_url.clone();
+                        username = e.workflow.name;
+                        avatar = e.sender.avatar_url;
                     }
                 }
                 Err(err) => {
@@ -112,8 +112,8 @@ pub async fn parse_event(event: String, body: web::Bytes, creds: Credentials) {
                         e.sender.login, e.sender.html_url,
                         e.repository.name, e.repository.html_url
                     );
-                    username = e.sender.login.clone();
-                    avatar = e.sender.avatar_url.clone();
+                    username = e.sender.login;
+                    avatar = e.sender.avatar_url;
                 }
                 Err(err) => {
                     error!("{}", err);
@@ -130,8 +130,8 @@ pub async fn parse_event(event: String, body: web::Bytes, creds: Credentials) {
                         e.sender.login, e.sender.html_url,
                         e.forkee.name, e.forkee.html_url
                     );
-                    username = e.sender.login.clone();
-                    avatar = e.sender.avatar_url.clone();
+                    username = e.sender.login;
+                    avatar = e.sender.avatar_url;
                 }
                 Err(err) => {
                     error!("{}", err);
