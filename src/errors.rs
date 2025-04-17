@@ -8,6 +8,9 @@ pub enum Error {
     #[error("Http Request Error: {0}")]
     HttpRequestError(#[from] reqwest::Error),
 
+    #[error("Regex Error: {0}")]
+    RegexError(#[from] regex::Error),
+
     #[error("Utf8 Error: {0}")]
     Utf8Error(#[from] std::str::Utf8Error),
 

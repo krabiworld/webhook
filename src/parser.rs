@@ -12,7 +12,7 @@ pub async fn parse_event(event: String, body: web::Bytes, creds: Credentials) ->
     match event.as_str() {
         "push" => {
             let e = serde_json::from_slice::<PushEvent>(&body)?;
-            let re = Regex::new(r"(?m)^\s*\n").unwrap();
+            let re = Regex::new(r"(?m)^\s*\n")?;
             let mut commits = String::new();
 
             for c in &e.commits {
