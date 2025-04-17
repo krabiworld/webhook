@@ -1,9 +1,11 @@
 mod structs;
 mod parser;
 mod client;
+mod errors;
 
 use actix_web::{post, web, App, HttpRequest, HttpResponse, HttpServer, Responder};
 use actix_web::http::StatusCode;
+use log::error;
 use crate::parser::parse_event;
 use crate::structs::{Credentials};
 
@@ -18,7 +20,9 @@ async fn webhook(req: HttpRequest, creds: web::Path<Credentials>, body: web::Byt
     }
 
     tokio::spawn(async move {
-        parse_event(event, body, creds.into_inner()).await;
+        if let Err(e) = parse_event(event, body, creds.into_inner()).await {
+            error!("{}", e);
+        }
     });
 
     HttpResponse::Ok().status(StatusCode::NO_CONTENT).finish()

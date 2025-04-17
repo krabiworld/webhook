@@ -1,8 +1,8 @@
-use log::error;
 use crate::DISCORD_BASE_URL;
+use crate::errors::Error;
 use crate::structs::{Credentials, Discord};
 
-pub async fn execute_webhook(content: String, username: String, avatar_url: String, creds: Credentials) {
+pub async fn execute_webhook(content: String, username: String, avatar_url: String, creds: Credentials) -> Result<(), Error> {
     let body = Discord {
         content,
         username,
@@ -15,20 +15,16 @@ pub async fn execute_webhook(content: String, username: String, avatar_url: Stri
     );
 
     let client = reqwest::Client::new();
-    match client.post(&url)
+    let res = client.post(&url)
         .header("Content-Type", "application/json")
         .json(&body)
-        .send().await {
-        Ok(res) => {
-            if !res.status().is_success() {
-                let body = res.bytes().await.unwrap();
-                let body_str = std::str::from_utf8(&body).unwrap();
-                error!("discord request failed: {}", body_str);
-            }
-        }
-        Err(e) => {
-            error!("http request failed: {}", e);
-            return;
-        }
-    };
+        .send().await?;
+
+    if !res.status().is_success() {
+        let body = res.bytes().await?;
+        let body_str = std::str::from_utf8(&body)?;
+        return Err(Error::DiscordError(body_str.to_string()));
+    }
+
+    Ok(())
 }
