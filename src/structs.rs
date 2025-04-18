@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
-pub struct Discord {
+pub struct WebhookMessage {
     #[serde(rename = "content")]
     pub content: String,
 

@@ -15,5 +15,5 @@ pub enum Error {
     Utf8Error(#[from] std::str::Utf8Error),
 
     #[error("Discord Error: {0}")]
-    DiscordError(String)
+    DiscordError(String),
 }

@@ -4,6 +4,8 @@ services:
     build:
       context: .
     restart: always
+    environment:
+      - RUST_LOG=info
     networks:
       - traefik
     labels:
