@@ -16,15 +16,21 @@ pub struct PushEvent {
 
 impl Event for PushEvent {
     fn handle(&self) -> Result<Option<WebhookMessage>, Error> {
-        let re = Regex::new(r"(?m)^\s*\n")?;
+        let newline_re = Regex::new(r"(?m)^\s*\n")?;
+        let link_re = Regex::new(r"\[([^]]+)]\((https?://[^)]+)\)")?;
         let mut commits = String::new();
 
         for c in &self.commits {
+            let clean_msg = newline_re.replace_all(&c.message, "").to_string();
+            let updated_msg = link_re.replace_all(&clean_msg, |caps: &regex::Captures| {
+                format!("[{}](<{}>)", &caps[1], &caps[2])
+            });
+
             commits.push_str(&format!(
                 "[`{}`](<{}>) {}\n",
                 &c.id[..7],
                 c.url,
-                re.replace_all(&c.message, "").to_string()
+                updated_msg
             ));
         }
 

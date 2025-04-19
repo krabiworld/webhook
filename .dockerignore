@@ -1,6 +1,9 @@
 # Rust
 target
 
+# Tests
+tests
+
 # IDE
 .idea
 .vscode
