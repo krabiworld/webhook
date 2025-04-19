@@ -1,9 +1,8 @@
 mod client;
 mod errors;
+mod events;
 mod parser;
 mod server;
-mod structs;
-mod events;
 
 use crate::server::webhook;
 use actix_web::{App, HttpServer};

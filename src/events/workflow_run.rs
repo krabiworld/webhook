@@ -1,6 +1,16 @@
+use serde::Deserialize;
 use crate::errors::Error;
 use crate::events::Event;
-use crate::structs::{WebhookMessage, WorkflowRunEvent};
+use crate::events::base::{Repository, User, WebhookMessage, Workflow, WorkflowRun};
+
+#[derive(Deserialize)]
+pub struct WorkflowRunEvent {
+    pub action: String,
+    pub workflow: Workflow,
+    pub workflow_run: WorkflowRun,
+    pub repository: Repository,
+    pub sender: User,
+}
 
 impl Event for WorkflowRunEvent {
     fn handle(&self) -> Result<Option<WebhookMessage>, Error> {

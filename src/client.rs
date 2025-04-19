@@ -1,6 +1,6 @@
 use crate::DISCORD_BASE_URL;
 use crate::errors::Error;
-use crate::structs::{Credentials, WebhookMessage};
+use crate::events::base::{Credentials, WebhookMessage};
 
 pub async fn execute_webhook(event: WebhookMessage, creds: Credentials) -> Result<(), Error> {
     let url = format!("{}/webhooks/{}/{}", DISCORD_BASE_URL, creds.id, creds.token);

@@ -1,7 +1,18 @@
 use crate::errors::Error;
 use crate::events::Event;
-use crate::structs::{PushEvent, WebhookMessage};
+use crate::events::base::{PushCommit, Repository, User, WebhookMessage};
 use regex::Regex;
+use serde::Deserialize;
+
+#[derive(Deserialize)]
+pub struct PushEvent {
+    pub commits: Vec<PushCommit>,
+    #[serde(rename = "ref")]
+    pub ref_: String,
+    pub pusher: User,
+    pub sender: User,
+    pub repository: Repository,
+}
 
 impl Event for PushEvent {
     fn handle(&self) -> Result<Option<WebhookMessage>, Error> {

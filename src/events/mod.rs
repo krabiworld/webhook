@@ -1,10 +1,11 @@
-use crate::errors::Error;
-use crate::structs::WebhookMessage;
+pub(crate) mod base;
+pub(crate) mod fork;
+pub(crate) mod push;
+pub(crate) mod star;
+pub(crate) mod workflow_run;
 
-mod fork;
-mod push;
-mod star;
-mod workflow_run;
+use crate::errors::Error;
+use base::WebhookMessage;
 
 pub trait Event {
     fn handle(&self) -> Result<Option<WebhookMessage>, Error>;

@@ -1,6 +1,6 @@
 use crate::GITHUB_EVENT;
 use crate::parser::parse_event;
-use crate::structs::Credentials;
+use crate::events::base::Credentials;
 use actix_web::http::StatusCode;
 use actix_web::{HttpRequest, HttpResponse, Responder, post, web};
 use log::error;

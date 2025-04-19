@@ -1,6 +1,14 @@
 use crate::errors::Error;
 use crate::events::Event;
-use crate::structs::{StarEvent, WebhookMessage};
+use crate::events::base::{Repository, User, WebhookMessage};
+use serde::Deserialize;
+
+#[derive(Deserialize)]
+pub struct StarEvent {
+    pub action: String,
+    pub sender: User,
+    pub repository: Repository,
+}
 
 impl Event for StarEvent {
     fn handle(&self) -> Result<Option<WebhookMessage>, Error> {

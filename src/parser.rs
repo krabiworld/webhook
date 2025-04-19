@@ -1,7 +1,11 @@
 use crate::client::execute_webhook;
 use crate::errors::Error;
 use crate::events::Event;
-use crate::structs::{Credentials, ForkEvent, PushEvent, StarEvent, WorkflowRunEvent};
+use crate::events::base::Credentials;
+use crate::events::fork::ForkEvent;
+use crate::events::push::PushEvent;
+use crate::events::star::StarEvent;
+use crate::events::workflow_run::WorkflowRunEvent;
 use actix_web::web;
 
 pub async fn parse_event(event: String, body: web::Bytes, creds: Credentials) -> Result<(), Error> {

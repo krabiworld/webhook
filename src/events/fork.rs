@@ -1,6 +1,13 @@
 use crate::errors::Error;
 use crate::events::Event;
-use crate::structs::{ForkEvent, WebhookMessage};
+use crate::events::base::{Forkee, User, WebhookMessage};
+use serde::Deserialize;
+
+#[derive(Deserialize)]
+pub struct ForkEvent {
+    pub sender: User,
+    pub forkee: Forkee,
+}
 
 impl Event for ForkEvent {
     fn handle(&self) -> Result<Option<WebhookMessage>, Error> {
