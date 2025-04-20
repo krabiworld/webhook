@@ -1,6 +1,7 @@
 pub(crate) mod base;
 pub(crate) mod fork;
 pub(crate) mod push;
+pub(crate) mod release;
 pub(crate) mod star;
 pub(crate) mod workflow_run;
 

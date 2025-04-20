@@ -64,3 +64,11 @@ pub struct Forkee {
     #[serde(default)]
     pub html_url: String,
 }
+
+#[derive(Deserialize)]
+pub struct Release {
+    #[serde(default)]
+    pub html_url: String,
+    #[serde(default)]
+    pub tag_name: String,
+}

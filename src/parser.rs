@@ -4,6 +4,7 @@ use crate::events::Event;
 use crate::events::base::Credentials;
 use crate::events::fork::ForkEvent;
 use crate::events::push::PushEvent;
+use crate::events::release::ReleaseEvent;
 use crate::events::star::StarEvent;
 use crate::events::workflow_run::WorkflowRunEvent;
 use actix_web::web;
@@ -20,6 +21,7 @@ pub async fn parse_event(
         "workflow_run" => serde_json::from_slice::<WorkflowRunEvent>(&body)?.handle()?,
         "star" => serde_json::from_slice::<StarEvent>(&body)?.handle()?,
         "fork" => serde_json::from_slice::<ForkEvent>(&body)?.handle()?,
+        "release" => serde_json::from_slice::<ReleaseEvent>(&body)?.handle()?,
         _ => None,
     };
 
