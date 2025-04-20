@@ -1,12 +1,16 @@
-FROM rust:slim AS build
-RUN apt update && apt install -y \
-    pkg-config \
-    libssl-dev \
-    && rm -rf /var/lib/apt/lists/*
+FROM lukemathwalker/cargo-chef:latest-rust-1.86.0 AS chef
 WORKDIR /app
+
+FROM chef AS planner
 COPY . .
-RUN cargo build --release && strip target/release/webhook
+RUN cargo chef prepare --recipe-path recipe.json
+
+FROM chef AS builder
+COPY --from=planner /app/recipe.json recipe.json
+RUN cargo chef cook --release --recipe-path recipe.json
+COPY . .
+RUN cargo build --release --bin webhook
 
 FROM gcr.io/distroless/cc-debian12
-COPY --from=build /app/target/release/webhook .
+COPY --from=builder /app/target/release/webhook .
 CMD ["./webhook"]
