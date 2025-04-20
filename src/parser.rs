@@ -7,8 +7,14 @@ use crate::events::push::PushEvent;
 use crate::events::star::StarEvent;
 use crate::events::workflow_run::WorkflowRunEvent;
 use actix_web::web;
+use reqwest::Client;
 
-pub async fn parse_event(event: String, body: web::Bytes, creds: Credentials) -> Result<(), Error> {
+pub async fn parse_event(
+    event: String,
+    body: web::Bytes,
+    creds: Credentials,
+    client: Client,
+) -> Result<(), Error> {
     let event_result = match event.as_str() {
         "push" => serde_json::from_slice::<PushEvent>(&body)?.handle()?,
         "workflow_run" => serde_json::from_slice::<WorkflowRunEvent>(&body)?.handle()?,
@@ -18,7 +24,7 @@ pub async fn parse_event(event: String, body: web::Bytes, creds: Credentials) ->
     };
 
     if let Some(event_result) = event_result {
-        execute_webhook(event_result, creds).await?;
+        execute_webhook(event_result, creds, client).await?;
     }
 
     Ok(())

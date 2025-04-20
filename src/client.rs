@@ -1,11 +1,15 @@
 use crate::DISCORD_BASE_URL;
 use crate::errors::Error;
 use crate::events::base::{Credentials, WebhookMessage};
+use reqwest::Client;
 
-pub async fn execute_webhook(event: WebhookMessage, creds: Credentials) -> Result<(), Error> {
+pub async fn execute_webhook(
+    event: WebhookMessage,
+    creds: Credentials,
+    client: Client,
+) -> Result<(), Error> {
     let url = format!("{}/webhooks/{}/{}", DISCORD_BASE_URL, creds.id, creds.token);
 
-    let client = reqwest::Client::new();
     let res = client
         .post(&url)
         .header("Content-Type", "application/json")

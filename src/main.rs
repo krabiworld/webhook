@@ -5,7 +5,7 @@ mod parser;
 mod server;
 
 use crate::server::webhook;
-use actix_web::{App, HttpServer};
+use actix_web::{App, HttpServer, web};
 
 const DISCORD_BASE_URL: &str = "https://discord.com/api";
 const GITHUB_EVENT: &str = "X-GitHub-Event";
@@ -20,8 +20,14 @@ async fn main() -> std::io::Result<()> {
 
     env_logger::init();
 
-    HttpServer::new(|| App::new().service(webhook))
-        .bind((addr, port))?
-        .run()
-        .await
+    let client = reqwest::Client::new();
+
+    HttpServer::new(move || {
+        App::new()
+            .app_data(web::Data::new(client.clone()))
+            .service(webhook)
+    })
+    .bind((addr, port))?
+    .run()
+    .await
 }
