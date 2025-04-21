@@ -1,6 +1,6 @@
 use crate::errors::Error;
-use crate::events::Event;
 use crate::events::base::{PushCommit, Repository, User, WebhookMessage};
+use crate::events::Event;
 use regex::Regex;
 use serde::Deserialize;
 
@@ -16,33 +16,42 @@ pub struct PushEvent {
 
 impl Event for PushEvent {
     fn handle(&self) -> Result<Option<WebhookMessage>, Error> {
+        if self.commits.len() == 0 {
+            return Ok(None);
+        }
+
         let newline_re = Regex::new(r"(?m)^\s*\n")?;
         let link_re = Regex::new(r"\[([^]]+)]\((https?://[^)]+)\)")?;
+        let md_re = Regex::new(r"(?m)^\s*#{1,3}\s+")?;
         let mut commits = String::new();
 
         for c in &self.commits {
-            let clean_msg = newline_re.replace_all(&c.message, "").to_string();
-            let updated_msg = link_re.replace_all(&clean_msg, |caps: &regex::Captures| {
-                format!("[{}](<{}>)", &caps[1], &caps[2])
-            });
+            let clean_newline_msg = newline_re.replace_all(&c.message, "").to_string();
+            let clean_link_msg = link_re
+                .replace_all(&clean_newline_msg, |caps: &regex::Captures| {
+                    format!("[{}](<{}>)", &caps[1], &caps[2])
+                })
+                .to_string();
+            let clean_md_msg = md_re.replace_all(&clean_link_msg, "").to_string();
 
             commits.push_str(&format!(
                 "[`{}`](<{}>) {}\n",
                 &c.id[..7],
                 c.url,
-                updated_msg
+                clean_md_msg
             ));
         }
 
         let branch = self.ref_.strip_prefix("refs/heads/").unwrap_or(&self.ref_);
         let footer = format!(
-            "\n- [{}](<{}>) on [{}](<{}>)/[{}](<{}>)",
+            "\n- [{}](<{}>) on [{}](<{}>)/[{}](<{}/tree/{}>)",
             self.pusher.name,
             self.sender.html_url,
             self.repository.name,
             self.repository.html_url,
             branch,
-            format!("{}/tree/{}", self.repository.html_url, branch),
+            self.repository.html_url,
+            branch,
         );
 
         let limit = 2000 - (footer.chars().count() + "...".len() + 1);
