@@ -1,6 +1,7 @@
 services:
   foxogram-webhook:
     container_name: foxogram-webhook
+    image: foxogram/webhook
     build:
       context: .
     restart: always
