@@ -4,10 +4,9 @@ mod events;
 mod parser;
 mod server;
 
-use std::sync::Arc;
-
 use crate::server::webhook;
 use actix_web::{App, HttpServer, web};
+use std::sync::Arc;
 
 const DISCORD_BASE_URL: &str = "https://discord.com/api";
 const GITHUB_EVENT: &str = "X-GitHub-Event";
