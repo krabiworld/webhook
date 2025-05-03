@@ -1,6 +1,6 @@
 use crate::errors::Error;
-use crate::events::base::{PushCommit, Repository, User, WebhookMessage};
 use crate::events::Event;
+use crate::events::base::{PushCommit, Repository, User, WebhookMessage};
 use regex::Regex;
 use serde::Deserialize;
 

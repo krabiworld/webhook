@@ -1,22 +1,19 @@
-use std::sync::Arc;
-
 use crate::events::base::Credentials;
 use crate::parser::parse_event;
 use crate::{GITHUB_EVENT, GITHUB_SIG};
 use actix_web::http::StatusCode;
-use actix_web::{post, web, HttpRequest, HttpResponse, Responder};
+use actix_web::{HttpRequest, HttpResponse, Responder, post, web};
 use hmac::{Hmac, Mac};
 use log::error;
 use reqwest::Client;
 use sha2::Sha256;
+use std::sync::Arc;
 use subtle::ConstantTimeEq;
 
 type HmacSha256 = Hmac<Sha256>;
 
 fn no_content() -> HttpResponse {
-    HttpResponse::Ok()
-        .status(StatusCode::NO_CONTENT)
-        .finish()
+    HttpResponse::Ok().status(StatusCode::NO_CONTENT).finish()
 }
 
 #[post("/{id}/{token}")]
@@ -27,8 +24,10 @@ pub async fn webhook(
     secret: web::Data<Arc<String>>,
     client: web::Data<Client>,
 ) -> impl Responder {
-    // get and check github signature
-    let sig = req.headers().get(GITHUB_SIG)
+    // get and check GitHub signature
+    let sig = req
+        .headers()
+        .get(GITHUB_SIG)
         .and_then(|h| h.to_str().ok())
         .filter(|s| s.starts_with("sha256="))
         .map(|s| &s[7..]);
@@ -46,7 +45,12 @@ pub async fn webhook(
     let expected_hex = hex::encode(mac.finalize().into_bytes());
 
     // constant-time equality check
-    if expected_hex.as_bytes().ct_eq(sig_hex.as_bytes()).unwrap_u8() != 1 {
+    if expected_hex
+        .as_bytes()
+        .ct_eq(sig_hex.as_bytes())
+        .unwrap_u8()
+        != 1
+    {
         return no_content();
     }
 

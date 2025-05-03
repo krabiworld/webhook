@@ -1,7 +1,7 @@
-use serde::Deserialize;
 use crate::errors::Error;
 use crate::events::Event;
 use crate::events::base::{Repository, User, WebhookMessage, Workflow, WorkflowRun};
+use serde::Deserialize;
 
 #[derive(Deserialize)]
 pub struct WorkflowRunEvent {
