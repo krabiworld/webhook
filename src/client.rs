@@ -6,7 +6,7 @@ use reqwest::Client;
 pub async fn execute_webhook(
     event: WebhookMessage,
     creds: Credentials,
-    client: Client,
+    client: &Client,
 ) -> Result<(), Error> {
     let url = format!("{}/webhooks/{}/{}", DISCORD_BASE_URL, creds.id, creds.token);
 

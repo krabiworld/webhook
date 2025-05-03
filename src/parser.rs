@@ -14,7 +14,7 @@ pub async fn parse_event(
     event: String,
     body: web::Bytes,
     creds: Credentials,
-    client: Client,
+    client: &Client,
 ) -> Result<(), Error> {
     let event_result = match event.as_str() {
         "push" => serde_json::from_slice::<PushEvent>(&body)?.handle()?,

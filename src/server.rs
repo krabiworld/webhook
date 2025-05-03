@@ -1,7 +1,6 @@
 use crate::events::base::Credentials;
 use crate::parser::parse_event;
 use crate::{GITHUB_EVENT, GITHUB_SIG};
-use actix_web::http::StatusCode;
 use actix_web::{HttpRequest, HttpResponse, Responder, post, web};
 use hmac::{Hmac, Mac};
 use log::error;
@@ -13,7 +12,7 @@ use subtle::ConstantTimeEq;
 type HmacSha256 = Hmac<Sha256>;
 
 fn no_content() -> HttpResponse {
-    HttpResponse::Ok().status(StatusCode::NO_CONTENT).finish()
+    HttpResponse::NoContent().finish()
 }
 
 #[post("/{id}/{token}")]
@@ -66,9 +65,9 @@ pub async fn webhook(
     }
 
     tokio::spawn({
-        let c = client.get_ref().clone();
+        let c = client.clone();
         async move {
-            if let Err(e) = parse_event(event, body, creds.into_inner(), c).await {
+            if let Err(e) = parse_event(event, body, creds.into_inner(), c.get_ref()).await {
                 error!("{}", e);
             }
         }
