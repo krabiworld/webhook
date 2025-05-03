@@ -4,11 +4,14 @@ mod events;
 mod parser;
 mod server;
 
+use std::sync::Arc;
+
 use crate::server::webhook;
 use actix_web::{App, HttpServer, web};
 
 const DISCORD_BASE_URL: &str = "https://discord.com/api";
 const GITHUB_EVENT: &str = "X-GitHub-Event";
+const GITHUB_SIG: &str = "X-Hub-Signature-256";
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -17,6 +20,8 @@ async fn main() -> std::io::Result<()> {
         .ok()
         .and_then(|p| p.parse().ok())
         .unwrap_or(8080);
+    let secret = std::env::var("SECRET").expect("env variable `SECRET` should be set");
+    let secret = Arc::new(secret);
 
     env_logger::init();
 
@@ -24,6 +29,7 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         App::new()
+            .app_data(web::Data::new(secret.clone()))
             .app_data(web::Data::new(client.clone()))
             .service(webhook)
     })

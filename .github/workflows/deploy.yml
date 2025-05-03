@@ -15,4 +15,6 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Run Webhook
+        env:
+          SECRET: ${{ secrets.SECRET }}
         run: docker compose up -d --build

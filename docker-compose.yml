@@ -7,6 +7,7 @@ services:
     restart: always
     environment:
       - RUST_LOG=info
+      - SECRET=${SECRET}
     networks:
       - traefik
     labels:

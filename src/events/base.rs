@@ -16,6 +16,12 @@ pub struct Credentials {
     pub token: String,
 }
 
+impl Credentials {
+    pub fn is_valid(&self) -> bool {
+        !self.id.trim().is_empty() && !self.token.trim().is_empty()
+    }
+}
+
 #[derive(Deserialize)]
 pub struct PushCommit {
     pub id: String,

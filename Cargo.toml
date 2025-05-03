@@ -23,3 +23,7 @@ regex = "1.11.1"
 log = "0.4.27"
 env_logger = { version = "0.11.8", default-features = false }
 thiserror = { version = "2.0.12", default-features = false }
+hmac = "0.12.1"
+sha2 = "0.10.9"
+hex = "0.4.3"
+subtle = "2.6.1"
