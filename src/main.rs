@@ -6,7 +6,8 @@ mod server;
 
 use crate::server::webhook;
 use actix_web::{App, HttpServer, web};
-use std::sync::Arc;
+use std::collections::HashMap;
+use std::sync::{Arc, Mutex};
 
 const DISCORD_BASE_URL: &str = "https://discord.com/api";
 const GITHUB_EVENT: &str = "X-GitHub-Event";
@@ -25,11 +26,13 @@ async fn main() -> std::io::Result<()> {
     env_logger::init();
 
     let client = reqwest::Client::new();
+    let star_jail = Arc::new(Mutex::new(HashMap::<String, bool>::new()));
 
     HttpServer::new(move || {
         App::new()
             .app_data(web::Data::new(secret.clone()))
             .app_data(web::Data::new(client.clone()))
+            .app_data(web::Data::new(star_jail.clone()))
             .service(webhook)
     })
     .bind((addr, port))?

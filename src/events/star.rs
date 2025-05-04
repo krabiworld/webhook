@@ -12,10 +12,6 @@ pub struct StarEvent {
 
 impl Event for StarEvent {
     fn handle(&self) -> Result<Option<WebhookMessage>, Error> {
-        if self.action != "created" {
-            return Ok(None);
-        }
-
         Ok(Some(WebhookMessage {
             content: format!(
                 "[{}](<{}>) starred [{}](<{}>) <:foxtada:1311327105300172882>",

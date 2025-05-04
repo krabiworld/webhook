@@ -16,4 +16,7 @@ pub enum Error {
 
     #[error("Discord Error: {0}")]
     DiscordError(String),
+
+    #[error("Poisoned mutex: {0}")]
+    MutexPoisonError(String),
 }

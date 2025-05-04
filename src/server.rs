@@ -6,7 +6,8 @@ use hmac::{Hmac, Mac};
 use log::error;
 use reqwest::Client;
 use sha2::Sha256;
-use std::sync::Arc;
+use std::collections::HashMap;
+use std::sync::{Arc, Mutex};
 use subtle::ConstantTimeEq;
 
 type HmacSha256 = Hmac<Sha256>;
@@ -22,6 +23,7 @@ pub async fn webhook(
     body: web::Bytes,
     secret: web::Data<Arc<String>>,
     client: web::Data<Client>,
+    star_jail: web::Data<Arc<Mutex<HashMap<String, bool>>>>,
 ) -> impl Responder {
     // get and check GitHub signature
     let sig = req
@@ -66,8 +68,9 @@ pub async fn webhook(
 
     tokio::spawn({
         let c = client.clone();
+        let j = star_jail.clone();
         async move {
-            if let Err(e) = parse_event(event, body, creds.into_inner(), c.get_ref()).await {
+            if let Err(e) = parse_event(event, body, creds.into_inner(), &*c, &*j).await {
                 error!("{}", e);
             }
         }
