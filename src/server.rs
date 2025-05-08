@@ -1,7 +1,7 @@
 use crate::events::base::Credentials;
 use crate::parser::parse_event;
 use crate::{GITHUB_EVENT, GITHUB_SIG};
-use actix_web::{HttpRequest, HttpResponse, Responder, post, web};
+use actix_web::{HttpRequest, HttpResponse, Responder, get, post, web};
 use hmac::{Hmac, Mac};
 use log::error;
 use reqwest::Client;
@@ -14,6 +14,11 @@ type HmacSha256 = Hmac<Sha256>;
 
 fn no_content() -> HttpResponse {
     HttpResponse::NoContent().finish()
+}
+
+#[get("/health")]
+pub async fn health() -> impl Responder {
+    HttpResponse::Ok().body("OK")
 }
 
 #[post("/{id}/{token}")]

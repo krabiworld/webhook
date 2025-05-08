@@ -4,7 +4,7 @@ mod events;
 mod parser;
 mod server;
 
-use crate::server::webhook;
+use crate::server::{health, webhook};
 use actix_web::{App, HttpServer, web};
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
@@ -33,6 +33,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::new(secret.clone()))
             .app_data(web::Data::new(client.clone()))
             .app_data(web::Data::new(star_jail.clone()))
+            .service(health)
             .service(webhook)
     })
     .bind((addr, port))?
