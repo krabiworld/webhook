@@ -2,6 +2,7 @@ use crate::client::execute_webhook;
 use crate::errors::Error;
 use crate::events::Event;
 use crate::events::base::Credentials;
+use crate::events::check_run::CheckRunEvent;
 use crate::events::fork::ForkEvent;
 use crate::events::push::PushEvent;
 use crate::events::release::ReleaseEvent;
@@ -29,7 +30,7 @@ pub async fn parse_event(
 
             // moved from event
             if star.action != "created" {
-                return Ok(())
+                return Ok(());
             }
 
             let mut map = star_jail
@@ -55,6 +56,7 @@ pub async fn parse_event(
         }
         "fork" => serde_json::from_slice::<ForkEvent>(&body)?.handle()?,
         "release" => serde_json::from_slice::<ReleaseEvent>(&body)?.handle()?,
+        "check_run" => serde_json::from_slice::<CheckRunEvent>(&body)?.handle()?,
         _ => None,
     };
 

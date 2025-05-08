@@ -1,27 +1,23 @@
 use crate::errors::Error;
 use crate::events::Event;
-use crate::events::base::{Repository, WebhookMessage, Workflow, WorkflowRun};
+use crate::events::base::{CheckRun, Repository, WebhookMessage};
 use serde::Deserialize;
 
 #[derive(Deserialize)]
-pub struct WorkflowRunEvent {
+pub struct CheckRunEvent {
     pub action: String,
-    pub workflow: Workflow,
-    pub workflow_run: WorkflowRun,
+    pub check_run: CheckRun,
     pub repository: Repository,
 }
 
-impl Event for WorkflowRunEvent {
+impl Event for CheckRunEvent {
     fn handle(&self) -> Result<Option<WebhookMessage>, Error> {
         if self.action != "completed" {
             return Ok(None);
         }
 
-        if let Some(conclusion) = &self.workflow_run.conclusion {
-            if (self.workflow.name.starts_with("CodeQL")
-                || self.workflow.name == "Dependabot Updates")
-                && conclusion == "success"
-            {
+        if let Some(conclusion) = &self.check_run.conclusion {
+            if self.check_run.app.slug != "cloudflare-workers-and-pages" {
                 return Ok(None);
             }
 
@@ -32,18 +28,20 @@ impl Event for WorkflowRunEvent {
             };
 
             let formatted = format!(
-                "{} Workflow [{}](<{}>) on [{}](<{}>)/[{}](<{}/tree/{}>)",
+                "{} Check [{}](<{}>) on [{}](<{}>)/[{}](<{}/tree/{}>)",
                 emoji,
                 conclusion,
-                self.workflow_run.html_url,
+                self.check_run.html_url,
                 self.repository.name,
                 self.repository.html_url,
-                self.workflow_run
+                self.check_run
+                    .check_suite
                     .head_branch
                     .as_deref()
                     .unwrap_or("unknown"),
                 self.repository.html_url,
-                self.workflow_run
+                self.check_run
+                    .check_suite
                     .head_branch
                     .as_deref()
                     .unwrap_or("unknown")
@@ -51,8 +49,8 @@ impl Event for WorkflowRunEvent {
 
             return Ok(Some(WebhookMessage {
                 content: formatted,
-                username: self.workflow.name.clone(),
-                avatar_url: self.repository.owner.avatar_url.clone(),
+                username: "Cloudflare Pages".to_string(),
+                avatar_url: self.check_run.app.owner.avatar_url.clone(),
             }));
         }
 

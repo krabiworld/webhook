@@ -1,4 +1,5 @@
 pub(crate) mod base;
+pub(crate) mod check_run;
 pub(crate) mod fork;
 pub(crate) mod push;
 pub(crate) mod release;

@@ -49,6 +49,7 @@ pub struct Repository {
     pub name: String,
     #[serde(default)]
     pub html_url: String,
+    pub owner: User,
 }
 
 #[derive(Deserialize)]
@@ -77,4 +78,24 @@ pub struct Release {
     pub html_url: String,
     #[serde(default)]
     pub tag_name: String,
+}
+
+#[derive(Deserialize)]
+pub struct App {
+    pub slug: String,
+    pub owner: User,
+}
+
+#[derive(Deserialize)]
+pub struct CheckSuite {
+    pub head_branch: Option<String>,
+}
+
+#[derive(Deserialize)]
+pub struct CheckRun {
+    pub conclusion: Option<String>,
+    #[serde(default)]
+    pub html_url: String,
+    pub app: App,
+    pub check_suite: CheckSuite,
 }
