@@ -29,7 +29,8 @@ job "foxogram-webhook" {
       driver = "docker"
 
       config {
-        image        = "foxogram/webhook:local"
+        image        = "localhost:5000/foxogram/webhook:latest"
+        force_pull   = true
         network_mode = "foxogram"
         labels = {
           "traefik.enable"                                                  = "true"
