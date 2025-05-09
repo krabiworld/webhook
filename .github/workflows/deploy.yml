@@ -14,11 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build
-        run: docker buildx build --push -t localhost:5000/foxogram/webhook:latest .
-
-      - name: Run
+      - name: Build and run
         env:
-          NOMAD_TOKEN: ${{ secrets.NOMAD_TOKEN }}
-          NOMAD_VAR_secret: ${{ secrets.SECRET }}
-        run: nomad job run nomad.hcl
+          SECRET: ${{ secrets.SECRET }}
+        run: docker compose up -d --build
