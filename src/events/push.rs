@@ -20,15 +20,21 @@ impl Event for PushEvent {
             return Ok(None);
         }
 
-        let newline_re = Regex::new(r"(?m)^\s*\n")?;
         let link_re = Regex::new(r"\[([^]]+)]\((https?://[^)]+)\)")?;
         let md_re = Regex::new(r"(?m)^\s*#{1,3}\s+")?;
         let mut commits = String::new();
 
         for c in &self.commits {
-            let clean_newline_msg = newline_re.replace_all(&c.message, "").to_string();
+            let mut lines = c.message.lines();
+            let first = lines.next().unwrap_or("");
+            let commit_msg = if lines.next().is_some() {
+                format!("{first}...")
+            } else {
+                first.to_string()
+            };
+
             let clean_link_msg = link_re
-                .replace_all(&clean_newline_msg, |caps: &regex::Captures| {
+                .replace_all(&commit_msg, |caps: &regex::Captures| {
                     format!("[{}](<{}>)", &caps[1], &caps[2])
                 })
                 .to_string();
