@@ -8,7 +8,7 @@ pub async fn execute_webhook(
     creds: Credentials,
     client: &Client,
 ) -> Result<(), Error> {
-    let url = format!("{}/webhooks/{}/{}", DISCORD_BASE_URL, creds.id, creds.token);
+    let url = format!("{DISCORD_BASE_URL}/webhooks/{}/{}", creds.id, creds.token);
 
     let res = client
         .post(&url)

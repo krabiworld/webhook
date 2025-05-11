@@ -71,7 +71,7 @@ impl Event for PushEvent {
         }
 
         Ok(Some(WebhookMessage {
-            content: format!("{}{}", commits, footer),
+            content: format!("{commits}{footer}"),
             username: self.pusher.name.clone(),
             avatar_url: self.sender.avatar_url.clone(),
         }))

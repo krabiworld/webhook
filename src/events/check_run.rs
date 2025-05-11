@@ -27,24 +27,17 @@ impl Event for CheckRunEvent {
                 "<:pepethinking:1330806911141941249>"
             };
 
+            let branch_name = self.check_run
+                .check_suite
+                .head_branch
+                .as_deref()
+                .unwrap_or("unknown");
             let formatted = format!(
-                "{} Check [{}](<{}>) on [{}](<{}>)/[{}](<{}/tree/{}>)",
-                emoji,
-                conclusion,
+                "{emoji} Check [{conclusion}](<{}>) on [{}](<{}>)/[{branch_name}](<{}/tree/{branch_name}>)",
                 self.check_run.html_url,
                 self.repository.name,
                 self.repository.html_url,
-                self.check_run
-                    .check_suite
-                    .head_branch
-                    .as_deref()
-                    .unwrap_or("unknown"),
                 self.repository.html_url,
-                self.check_run
-                    .check_suite
-                    .head_branch
-                    .as_deref()
-                    .unwrap_or("unknown")
             );
 
             return Ok(Some(WebhookMessage {

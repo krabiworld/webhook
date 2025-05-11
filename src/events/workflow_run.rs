@@ -31,22 +31,16 @@ impl Event for WorkflowRunEvent {
                 "<:pepethinking:1330806911141941249>"
             };
 
+            let branch_name = self.workflow_run
+                .head_branch
+                .as_deref()
+                .unwrap_or("unknown");
             let formatted = format!(
-                "{} Workflow [{}](<{}>) on [{}](<{}>)/[{}](<{}/tree/{}>)",
-                emoji,
-                conclusion,
+                "{emoji} Workflow [{conclusion}](<{}>) on [{}](<{}>)/[{branch_name}](<{}/tree/{branch_name}>)",
                 self.workflow_run.html_url,
                 self.repository.name,
                 self.repository.html_url,
-                self.workflow_run
-                    .head_branch
-                    .as_deref()
-                    .unwrap_or("unknown"),
                 self.repository.html_url,
-                self.workflow_run
-                    .head_branch
-                    .as_deref()
-                    .unwrap_or("unknown")
             );
 
             return Ok(Some(WebhookMessage {
