@@ -1,7 +1,13 @@
 use crate::errors::Error;
-use crate::events::Event;
 use crate::events::base::{Repository, WebhookMessage, Workflow, WorkflowRun};
+use crate::events::Event;
 use serde::Deserialize;
+
+const IGNORED_WORKFLOWS: [&str; 3] = [
+    "CodeQL",
+    "Automatic Dependency Submission",
+    "Dependabot Updates",
+];
 
 #[derive(Deserialize)]
 pub struct WorkflowRunEvent {
@@ -18,10 +24,7 @@ impl Event for WorkflowRunEvent {
         }
 
         if let Some(conclusion) = &self.workflow_run.conclusion {
-            if (self.workflow.name.starts_with("CodeQL")
-                || self.workflow.name == "Dependabot Updates")
-                && conclusion == "success"
-            {
+            if IGNORED_WORKFLOWS.contains(&self.workflow.name.as_str()) && conclusion == "success" {
                 return Ok(None);
             }
 
@@ -31,7 +34,8 @@ impl Event for WorkflowRunEvent {
                 "<:pepethinking:1330806911141941249>"
             };
 
-            let branch_name = self.workflow_run
+            let branch_name = self
+                .workflow_run
                 .head_branch
                 .as_deref()
                 .unwrap_or("unknown");
