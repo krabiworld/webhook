@@ -1,7 +1,7 @@
 services:
-  foxogram-webhook:
-    container_name: foxogram-webhook
-    image: foxogram/webhook
+  webhook:
+    container_name: webhook
+    image: webhook
     build:
       context: .
     restart: always
@@ -12,9 +12,9 @@ services:
       - traefik
     labels:
       traefik.enable: true
-      traefik.http.routers.foxogram-webhook.rule: Host(`webhook.foxogram.su`)
-      traefik.http.services.foxogram-webhook.loadbalancer.server.port: 8080
-      traefik.http.routers.foxogram-webhook.middlewares: ratelimit@file
+      traefik.http.routers.webhook.rule: Host(`webhook.foxochat.app`)
+      traefik.http.services.webhook.loadbalancer.server.port: 8080
+      traefik.http.routers.webhook.middlewares: ratelimit@file
 
 networks:
   traefik:
