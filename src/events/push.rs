@@ -20,6 +20,10 @@ impl Event for PushEvent {
             return Ok(None);
         }
 
+        if self.repository.private {
+            return Ok(None);
+        }
+
         let link_re = Regex::new(r"\[([^]]+)]\((https?://[^)]+)\)")?;
         let md_re = Regex::new(r"(?m)^\s*#{1,3}\s+")?;
         let mut commits = String::new();

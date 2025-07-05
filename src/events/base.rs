@@ -50,6 +50,7 @@ pub struct Repository {
     #[serde(default)]
     pub html_url: String,
     pub owner: User,
+    pub private: bool,
 }
 
 #[derive(Deserialize)]

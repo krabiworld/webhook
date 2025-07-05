@@ -16,6 +16,10 @@ impl Event for CheckRunEvent {
             return Ok(None);
         }
 
+        if self.repository.private {
+            return Ok(None);
+        }
+
         if let Some(conclusion) = &self.check_run.conclusion {
             if self.check_run.app.slug != "cloudflare-workers-and-pages" {
                 return Ok(None);

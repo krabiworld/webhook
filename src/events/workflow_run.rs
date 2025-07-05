@@ -23,6 +23,10 @@ impl Event for WorkflowRunEvent {
             return Ok(None);
         }
 
+        if self.repository.private {
+            return Ok(None);
+        }
+
         if let Some(conclusion) = &self.workflow_run.conclusion {
             if IGNORED_WORKFLOWS.contains(&self.workflow.name.as_str()) && conclusion == "success" {
                 return Ok(None);
