@@ -18,11 +18,12 @@ impl Event for StarEvent {
 
         Ok(Some(WebhookMessage {
             content: format!(
-                "[{}](<{}>) starred [{}](<{}>) <:foxtada:1311327105300172882>",
+                "[{}](<{}>) starred [{}](<{}>) {}",
                 self.sender.login,
                 self.sender.html_url,
                 self.repository.name,
-                self.repository.html_url
+                self.repository.html_url,
+                std::env::var("HAPPY_EMOJI").unwrap_or_else(|_| "🐈".into())
             ),
             username: self.sender.login.clone(),
             avatar_url: self.sender.avatar_url.clone(),

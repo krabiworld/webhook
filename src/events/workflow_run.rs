@@ -33,9 +33,9 @@ impl Event for WorkflowRunEvent {
             }
 
             let emoji = if conclusion == "failure" {
-                "<:catscream:1325122976575655936>"
+                std::env::var("FAILURE_EMOJI").unwrap_or_else(|_| "❌".into())
             } else {
-                "<:pepethinking:1330806911141941249>"
+                std::env::var("SUCCESS_EMOJI").unwrap_or_else(|_| "✅".into())
             };
 
             let branch_name = self
