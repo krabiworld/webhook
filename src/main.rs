@@ -15,6 +15,8 @@ const GITHUB_SIG: &str = "X-Hub-Signature-256";
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    dotenvy::dotenv().ok();
+
     let addr = std::env::var("ADDR").unwrap_or_else(|_| "0.0.0.0".into());
     let port = std::env::var("PORT")
         .ok()

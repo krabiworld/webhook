@@ -9,3 +9,6 @@ tests
 
 # macOS
 .DS_Store
+
+# Env
+.env
