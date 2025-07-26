@@ -87,11 +87,11 @@ jobs:
 
       - name: Create Dockerfile
         run: |
-          cat <<EOF > ./Dockerfile
+          cat <<'EOF' > ./Dockerfile
           # syntax=docker/dockerfile:1.17.0
           FROM gcr.io/distroless/cc-debian12
           ARG TARGETARCH
-          COPY --from=\${TARGETARCH} /webhook /webhook
+          COPY ./${TARGETARCH}/webhook /webhook
           CMD ["/webhook"]
           EOF
 
@@ -104,10 +104,6 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/amd64,linux/arm64
-          build-contexts: |
-            amd64=./amd64
-            arm64=./arm64
-          file: ./Dockerfile
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
