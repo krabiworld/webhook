@@ -42,6 +42,7 @@ jobs:
           path: target/${{ matrix.target }}/release/webhook
 
   package:
+    needs: build
     runs-on: ubuntu-latest
 
     permissions:
