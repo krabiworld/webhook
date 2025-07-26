@@ -1,3 +1,4 @@
+use crate::config;
 use crate::errors::Error;
 use crate::events::base::{Repository, WebhookMessage, Workflow, WorkflowRun};
 use crate::events::Event;
@@ -33,9 +34,9 @@ impl Event for WorkflowRunEvent {
             }
 
             let emoji = if conclusion == "failure" {
-                std::env::var("FAILURE_EMOJI").unwrap_or_else(|_| "❌".into())
+                config::get().failure_emoji.clone()
             } else {
-                std::env::var("SUCCESS_EMOJI").unwrap_or_else(|_| "✅".into())
+                config::get().success_emoji.clone()
             };
 
             let branch_name = self

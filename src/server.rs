@@ -1,6 +1,6 @@
 use crate::events::base::Credentials;
 use crate::parser::parse_event;
-use crate::{GITHUB_EVENT, GITHUB_SIG};
+use crate::{config, GITHUB_EVENT, GITHUB_SIG};
 use actix_web::{HttpRequest, HttpResponse, Responder, get, post, web};
 use hmac::{Hmac, Mac};
 use log::error;
@@ -26,7 +26,6 @@ pub async fn webhook(
     req: HttpRequest,
     creds: web::Path<Credentials>,
     body: web::Bytes,
-    secret: web::Data<Arc<String>>,
     client: web::Data<Client>,
     star_jail: web::Data<Arc<Mutex<HashMap<String, bool>>>>,
 ) -> impl Responder {
@@ -43,7 +42,7 @@ pub async fn webhook(
         None => return no_content(),
     };
 
-    let mut mac = match HmacSha256::new_from_slice(secret.as_bytes()) {
+    let mut mac = match HmacSha256::new_from_slice(config::get().secret.as_bytes()) {
         Ok(o) => o,
         Err(_) => return no_content(),
     };

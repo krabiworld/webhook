@@ -1,3 +1,4 @@
+use crate::config;
 use crate::errors::Error;
 use crate::events::Event;
 use crate::events::base::{Repository, User, WebhookMessage};
@@ -23,7 +24,7 @@ impl Event for StarEvent {
                 self.sender.html_url,
                 self.repository.name,
                 self.repository.html_url,
-                std::env::var("HAPPY_EMOJI").unwrap_or_else(|_| "🐈".into())
+                config::get().happy_emoji.clone()
             ),
             username: self.sender.login.clone(),
             avatar_url: self.sender.avatar_url.clone(),

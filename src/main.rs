@@ -3,6 +3,7 @@ mod errors;
 mod events;
 mod parser;
 mod server;
+mod config;
 
 use crate::server::{health, webhook};
 use actix_web::{App, HttpServer, web};
@@ -15,15 +16,7 @@ const GITHUB_SIG: &str = "X-Hub-Signature-256";
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    dotenvy::dotenv().ok();
-
-    let addr = std::env::var("ADDR").unwrap_or_else(|_| "0.0.0.0".into());
-    let port = std::env::var("PORT")
-        .ok()
-        .and_then(|p| p.parse().ok())
-        .unwrap_or(8080);
-    let secret = std::env::var("SECRET").expect("env variable `SECRET` should be set");
-    let secret = Arc::new(secret);
+    config::init().expect("Failed to initialize config");
 
     env_logger::init();
 
@@ -32,13 +25,12 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         App::new()
-            .app_data(web::Data::new(secret.clone()))
             .app_data(web::Data::new(client.clone()))
             .app_data(web::Data::new(star_jail.clone()))
             .service(health)
             .service(webhook)
     })
-    .bind((addr, port))?
+    .bind((config::get().address.clone(), config::get().port))?
     .run()
     .await
 }
