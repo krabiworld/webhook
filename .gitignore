@@ -1,10 +1,8 @@
 # Rust
 target
 
-# Tests
-tests
-
 # IDE
+.vscode
 .idea
 
 # macOS
