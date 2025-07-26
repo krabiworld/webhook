@@ -44,7 +44,10 @@ pub async fn webhook(
 
     let mut mac = match HmacSha256::new_from_slice(config::get().secret.as_bytes()) {
         Ok(o) => o,
-        Err(_) => return no_content(),
+        Err(e) => {
+            error!("{}", e);
+            return no_content()
+        },
     };
     mac.update(&body);
     let expected_hex = hex::encode(mac.finalize().into_bytes());

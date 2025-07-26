@@ -1,3 +1,4 @@
+use log::info;
 use once_cell::sync::OnceCell;
 use serde::Deserialize;
 use std::error::Error;
@@ -17,10 +18,10 @@ pub struct Config {
 static CONFIG: OnceCell<Config> = OnceCell::new();
 
 pub fn init() -> Result<(), Box<dyn Error>> {
-    dotenvy::dotenv().ok();
-
     let config = envy::from_env::<Config>()?;
     CONFIG.set(config).map_err(|_| "Config already initialized")?;
+
+    info!("Config initialized");
 
     Ok(())
 }

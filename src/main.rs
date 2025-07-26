@@ -16,9 +16,11 @@ const GITHUB_SIG: &str = "X-Hub-Signature-256";
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    config::init().expect("Failed to initialize config");
-
+    dotenvy::dotenv().ok();
+    
     env_logger::init();
+    
+    config::init().expect("Failed to initialize config");
 
     let client = reqwest::Client::new();
     let star_jail = Arc::new(Mutex::new(HashMap::<String, bool>::new()));
