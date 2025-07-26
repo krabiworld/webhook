@@ -88,8 +88,10 @@ jobs:
       - name: Create Dockerfile
         run: |
           cat <<EOF > ./Dockerfile
+          # syntax=docker/dockerfile:1
           FROM gcr.io/distroless/cc-debian12
-          COPY webhook /webhook
+          ARG TARGETARCH
+          COPY --from=${TARGETARCH} /webhook /webhook
           CMD ["/webhook"]
           EOF
 
