@@ -9,6 +9,8 @@ pub struct Config {
     pub address: String,
     #[serde(default = "default_port")]
     pub port: u16,
+    #[serde(default = "default_signature_check")]
+    pub signature_check: bool,
     pub secret: String,
     pub happy_emoji: String,
     pub success_emoji: String,
@@ -36,4 +38,8 @@ fn default_address() -> String {
 
 fn default_port() -> u16 {
     8080
+}
+
+fn default_signature_check() -> bool {
+    true
 }

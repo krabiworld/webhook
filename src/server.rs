@@ -29,37 +29,39 @@ pub async fn webhook(
     client: web::Data<Client>,
     star_jail: web::Data<Arc<Mutex<HashMap<String, bool>>>>,
 ) -> impl Responder {
-    // get and check GitHub signature
-    let sig = req
-        .headers()
-        .get(GITHUB_SIG)
-        .and_then(|h| h.to_str().ok())
-        .filter(|s| s.starts_with("sha256="))
-        .map(|s| &s[7..]);
+    if config::get().signature_check {
+        // get and check GitHub signature
+        let sig = req
+            .headers()
+            .get(GITHUB_SIG)
+            .and_then(|h| h.to_str().ok())
+            .filter(|s| s.starts_with("sha256="))
+            .map(|s| &s[7..]);
 
-    let sig_hex = match sig {
-        Some(s) => s,
-        None => return no_content(),
-    };
+        let sig_hex = match sig {
+            Some(s) => s,
+            None => return no_content(),
+        };
 
-    let mut mac = match HmacSha256::new_from_slice(config::get().secret.as_bytes()) {
-        Ok(o) => o,
-        Err(e) => {
-            error!("{}", e);
-            return no_content()
-        },
-    };
-    mac.update(&body);
-    let expected_hex = hex::encode(mac.finalize().into_bytes());
+        let mut mac = match HmacSha256::new_from_slice(config::get().secret.as_bytes()) {
+            Ok(o) => o,
+            Err(e) => {
+                error!("{}", e);
+                return no_content()
+            },
+        };
+        mac.update(&body);
+        let expected_hex = hex::encode(mac.finalize().into_bytes());
 
-    // constant-time equality check
-    if expected_hex
-        .as_bytes()
-        .ct_eq(sig_hex.as_bytes())
-        .unwrap_u8()
-        != 1
-    {
-        return no_content();
+        // constant-time equality check
+        if expected_hex
+            .as_bytes()
+            .ct_eq(sig_hex.as_bytes())
+            .unwrap_u8()
+            != 1
+        {
+            return no_content();
+        }
     }
 
     // get and check event header
