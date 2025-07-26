@@ -3,7 +3,7 @@ use once_cell::sync::OnceCell;
 use serde::Deserialize;
 use std::error::Error;
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize)]
 pub struct Config {
     #[serde(default = "default_address")]
     pub address: String,
