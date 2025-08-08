@@ -59,6 +59,9 @@ jobs:
           name: webhook-aarch64-unknown-linux-gnu
           path: ./arm64
 
+      - name: Change permissions
+        run: chmod +x ./amd64/webhook ./arm64/webhook
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392 # v3.6.0
 
