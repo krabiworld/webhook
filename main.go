@@ -1,13 +1,15 @@
 package main
 
 import (
+	"os"
+	"os/signal"
+	"syscall"
 	"webhook/client"
 	"webhook/config"
 	"webhook/logger"
 	"webhook/server"
 
 	"github.com/rs/zerolog/log"
-	"github.com/valyala/fasthttp"
 )
 
 func main() {
@@ -15,12 +17,13 @@ func main() {
 
 	logger.Init()
 
-	log.Info().Msg("Initializing client")
 	client.Init()
+	log.Info().Msg("Client initialized")
 
-	log.Info().Str("addr", config.Get().Address).Msg("Starting server...")
-	err := fasthttp.ListenAndServe(config.Get().Address, server.Handler)
-	if err != nil {
-		log.Fatal().Err(err).Send()
-	}
+	go server.Start()
+	log.Info().Str("addr", config.Get().Address).Msg("Server started")
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
+	<-c
 }

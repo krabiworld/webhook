@@ -1,31 +1,28 @@
 package client
 
 import (
+	"bytes"
+	"context"
 	"fmt"
+	"net/http"
 	"time"
-	"webhook/config"
 	"webhook/structs"
 
 	"github.com/bytedance/sonic"
-	"github.com/valyala/fasthttp"
-	"github.com/valyala/fasthttp/fasthttpproxy"
+	"github.com/rs/zerolog/log"
+	"golang.org/x/net/proxy"
 )
 
-var client *fasthttp.Client
+var client *http.Client
 
 func Init() {
-	client = &fasthttp.Client{
-		ReadTimeout:                   time.Millisecond * 500,
-		WriteTimeout:                  time.Millisecond * 500,
-		MaxConnDuration:               time.Hour,
-		NoDefaultUserAgentHeader:      true,
-		DisableHeaderNamesNormalizing: true,
-		DisablePathNormalizing:        true,
-	}
-
-	proxy := config.Get().Proxy
-	if proxy != "" {
-		client.Dial = fasthttpproxy.FasthttpHTTPDialerTimeout(proxy, time.Second*2)
+	dial := proxy.FromEnvironment().(proxy.ContextDialer)
+	client = &http.Client{
+		Transport: &http.Transport{
+			Proxy:       http.ProxyFromEnvironment,
+			DialContext: dial.DialContext,
+		},
+		Timeout: time.Second,
 	}
 }
 
@@ -37,24 +34,31 @@ func ExecuteWebhook(eventResult *structs.Webhook, creds structs.Credentials) err
 		return err
 	}
 
-	req := fasthttp.AcquireRequest()
-	req.SetRequestURI(url)
-	req.Header.SetMethod(fasthttp.MethodPost)
-	req.Header.SetContentType("application/json")
-	req.SetBodyRaw(body)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
+	defer cancel()
 
-	resp := fasthttp.AcquireResponse()
-	if err := client.Do(req, resp); err != nil {
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewReader(body))
+	if err != nil {
 		return err
 	}
 
-	fasthttp.ReleaseRequest(req)
+	req.Header.Set("Content-Type", "application/json")
 
-	if resp.StatusCode() != fasthttp.StatusNoContent {
-		return fmt.Errorf(string(resp.Body()))
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
 	}
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			log.Error().Err(err).Msg("Failed to close response body")
+		}
+	}()
 
-	fasthttp.ReleaseResponse(resp)
+	if resp.StatusCode != http.StatusNoContent {
+		buf := new(bytes.Buffer)
+		_, _ = buf.ReadFrom(resp.Body)
+		return fmt.Errorf("discord webhook error: %s", buf.String())
+	}
 
 	return nil
 }

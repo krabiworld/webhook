@@ -1,96 +1,97 @@
 package server
 
 import (
-	"bytes"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
+	"io"
+	"mime"
+	"net/http"
 	"strings"
 	"webhook/config"
 	"webhook/parser"
 	"webhook/structs"
 
-	"github.com/valyala/fasthttp"
+	"github.com/rs/zerolog/log"
 )
 
-func webhook(ctx *fasthttp.RequestCtx) {
-	if !ctx.IsPost() {
-		ctx.SetStatusCode(fasthttp.StatusMethodNotAllowed)
+func webhook(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		w.Header().Set("Allow", http.MethodPost)
+		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
 
-	contentType := ctx.Request.Header.Peek("Content-Type")
-	if len(contentType) == 0 || !bytes.HasPrefix(contentType, []byte("application/json")) {
-		ctx.SetStatusCode(fasthttp.StatusUnsupportedMediaType)
+	mediaType, _, err := mime.ParseMediaType(r.Header.Get("Content-Type"))
+	if err != nil || mediaType != "application/json" {
+		w.Header().Set("Accept-Post", "application/json")
+		w.WriteHeader(http.StatusUnsupportedMediaType)
 		return
 	}
 
-	eventHeader := ctx.Request.Header.Peek("X-GitHub-Event")
-	if len(eventHeader) == 0 {
-		ctx.SetStatusCode(fasthttp.StatusBadRequest)
-		ctx.SetBodyString("Missing event")
+	eventHeader := r.Header.Get("X-GitHub-Event")
+	if eventHeader == "" {
+		http.Error(w, "Missing event", http.StatusBadRequest)
 		return
 	}
 
-	userAgentHeader := ctx.Request.Header.Peek("User-Agent")
-	if len(userAgentHeader) == 0 || !bytes.HasPrefix(userAgentHeader, []byte("GitHub-Hookshot/")) {
-		ctx.SetStatusCode(fasthttp.StatusBadRequest)
-		ctx.SetBodyString("Incorrect user agent")
+	userAgent := r.Header.Get("User-Agent")
+	if userAgent == "" || !strings.HasPrefix(userAgent, "GitHub-Hookshot/") {
+		http.Error(w, "Incorrect user agent", http.StatusBadRequest)
 		return
 	}
 
-	parts := strings.Split(string(ctx.Path()), "/")
-
-	if len(parts) != 3 || parts[1] == "" || parts[2] == "" {
-		ctx.SetStatusCode(fasthttp.StatusBadRequest)
-		ctx.SetBodyString("Path must be in format /:id/:token")
+	parts := strings.Split(strings.TrimPrefix(r.URL.Path, "/"), "/")
+	if len(parts) != 2 || parts[0] == "" || parts[1] == "" {
+		http.Error(w, "Path must be in format /:id/:token", http.StatusBadRequest)
 		return
 	}
 
-	if config.Get().Secret != "" {
-		signatureHeader := ctx.Request.Header.Peek("X-Hub-Signature-256")
-		if len(signatureHeader) == 0 {
-			ctx.SetStatusCode(fasthttp.StatusUnauthorized)
-			ctx.SetBodyString("Missing signature")
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Failed to read body", http.StatusInternalServerError)
+		return
+	}
+	defer func() {
+		if err := r.Body.Close(); err != nil {
+			log.Error().Err(err).Msg("Failed to close body")
+		}
+	}()
+
+	if secret := config.Get().Secret; secret != "" {
+		sig := r.Header.Get("X-Hub-Signature-256")
+		if sig == "" {
+			http.Error(w, "Missing signature", http.StatusUnauthorized)
 			return
 		}
 
-		body := ctx.PostBody()
-
-		mac := hmac.New(sha256.New, []byte(config.Get().Secret))
+		mac := hmac.New(sha256.New, []byte(secret))
 		mac.Write(body)
 		expectedMAC := mac.Sum(nil)
 
 		const prefix = "sha256="
-		sig := string(signatureHeader)
-		if len(sig) <= len(prefix) || sig[:len(prefix)] != prefix {
-			ctx.SetStatusCode(fasthttp.StatusBadRequest)
-			ctx.SetBodyString("Invalid signature format")
+		if !strings.HasPrefix(sig, prefix) {
+			http.Error(w, "Invalid signature format", http.StatusBadRequest)
 			return
 		}
 
 		receivedSig, err := hex.DecodeString(sig[len(prefix):])
 		if err != nil {
-			ctx.SetStatusCode(fasthttp.StatusBadRequest)
-			ctx.SetBodyString("Invalid signature hex")
+			http.Error(w, "Invalid signature hex", http.StatusBadRequest)
 			return
 		}
 
 		if !hmac.Equal(expectedMAC, receivedSig) {
-			ctx.SetStatusCode(fasthttp.StatusUnauthorized)
-			ctx.SetBodyString("Signature mismatch")
+			http.Error(w, "Signature mismatch", http.StatusUnauthorized)
 			return
 		}
 	}
 
 	creds := structs.Credentials{
-		ID:    parts[1],
-		Token: parts[2],
+		ID:    parts[0],
+		Token: parts[1],
 	}
 
-	ctx.SetStatusCode(fasthttp.StatusOK)
-
-	eventCopy := string(bytes.Clone(eventHeader))
-	bodyCopy := bytes.Clone(ctx.PostBody())
-	go parser.Parse(eventCopy, bodyCopy, creds)
+	w.WriteHeader(http.StatusNoContent)
+	go parser.Parse(eventHeader, body, creds)
 }

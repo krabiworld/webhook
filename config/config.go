@@ -8,7 +8,6 @@ import (
 type Config struct {
 	LogLevel                  string   `env:"LOG_LEVEL" envDefault:"info"`
 	Address                   string   `env:"ADDR" envDefault:":8080"`
-	Proxy                     string   `env:"PROXY"`
 	Secret                    string   `env:"SECRET"`
 	HappyEmoji                string   `env:"HAPPY_EMOJI"`
 	SuccessEmoji              string   `env:"SUCCESS_EMOJI"`
