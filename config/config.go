@@ -14,7 +14,7 @@ type Config struct {
 	SuccessEmoji              string   `env:"SUCCESS_EMOJI"`
 	FailureEmoji              string   `env:"FAILURE_EMOJI"`
 	DisabledEvents            []string `env:"DISABLED_EVENTS"`
-	IgnorePrivateRepositories bool     `env:"IGNORE_PRIVATE_REPOSITORIES"`
+	IgnorePrivateRepositories bool     `env:"IGNORE_PRIVATE_REPOSITORIES" envDefault:"false"`
 	IgnoredRepositories       []string `env:"IGNORED_REPOSITORIES"`
 	IgnoredWorkflows          []string `env:"IGNORED_WORKFLOW"`
 }
