@@ -6,6 +6,8 @@ import (
 	"webhook/config"
 	"webhook/jail"
 	"webhook/structs"
+
+	"github.com/rs/zerolog/log"
 )
 
 type star struct {
@@ -19,7 +21,11 @@ func (e *star) handle() (*structs.Webhook, error) {
 		return nil, nil
 	}
 
-	jail.Trap("star", e.Sender.Login, e.Repository.Name, time.Hour*24)
+	ok := jail.Trap("star", e.Sender.Login, e.Repository.Name, time.Hour*24)
+	if !ok {
+		log.Debug().Str("repository", e.Repository.Name).Str("username", e.Sender.Login).Msg("User in jail")
+		return nil, nil
+	}
 
 	return &structs.Webhook{
 		Content: fmt.Sprintf(
