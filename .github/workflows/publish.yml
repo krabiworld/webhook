@@ -9,35 +9,7 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        target:
-          - x86_64-unknown-linux-gnu
-          - aarch64-unknown-linux-gnu
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: Swatinem/rust-cache@98c8021b550208e191a6a3145459bfc9fb29c4c0 # v2.8.0
-        with:
-          key: ${{ matrix.target }}
-
-      - name: Install cross
-        run: cargo install cross
-
-      - name: Build binary for ${{ matrix.target }}
-        run: cross build --target ${{ matrix.target }} --release --bin webhook
-
-      - name: Upload binary artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: webhook-${{ matrix.target }}
-          path: target/${{ matrix.target }}/release/webhook
-
-  package:
-    needs: build
+  build-and-push-image:
     runs-on: ubuntu-latest
 
     permissions:
@@ -47,20 +19,8 @@ jobs:
       id-token: write
 
     steps:
-      - name: Download amd64 binary
-        uses: actions/download-artifact@v4
-        with:
-          name: webhook-x86_64-unknown-linux-gnu
-          path: ./amd64
-
-      - name: Download arm64 binary
-        uses: actions/download-artifact@v4
-        with:
-          name: webhook-aarch64-unknown-linux-gnu
-          path: ./arm64
-
-      - name: Change permissions
-        run: chmod +x ./amd64/webhook ./arm64/webhook
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392 # v3.6.0
@@ -80,16 +40,6 @@ jobs:
         uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804 # v5.7.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
-      - name: Create Dockerfile
-        run: |
-          cat <<'EOF' > ./Dockerfile
-          # syntax=docker/dockerfile:1.17.0
-          FROM gcr.io/distroless/cc-debian12
-          ARG TARGETARCH
-          COPY ./${TARGETARCH}/webhook /webhook
-          CMD ["/webhook"]
-          EOF
 
       - name: Build and push Docker image
         id: push

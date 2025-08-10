@@ -1,0 +1,36 @@
+package parser
+
+import (
+	"fmt"
+	"time"
+	"webhook/config"
+	"webhook/jail"
+	"webhook/structs"
+)
+
+type star struct {
+	Action     string             `json:"action"`
+	Sender     structs.User       `json:"sender"`
+	Repository structs.Repository `json:"repository"`
+}
+
+func (e *star) handle() (*structs.Webhook, error) {
+	if e.Action != "created" {
+		return nil, nil
+	}
+
+	jail.Trap("star", e.Sender.Login, e.Repository.Name, time.Hour*24)
+
+	return &structs.Webhook{
+		Content: fmt.Sprintf(
+			"[%s](<%s>) starred [%s](<%s>) %s",
+			e.Sender.Login,
+			e.Sender.HtmlUrl,
+			e.Repository.Name,
+			e.Repository.HtmlUrl,
+			config.Get().HappyEmoji,
+		),
+		Username:  e.Sender.Login,
+		AvatarUrl: e.Sender.AvatarURL,
+	}, nil
+}
