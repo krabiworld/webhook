@@ -14,9 +14,10 @@ func health(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if _, err := fmt.Fprint(w, "UP"); err != nil {
+	w.Header().Set("Content-Type", "application/json")
+
+	if _, err := fmt.Fprint(w, `{"status":"ok"}`); err != nil {
 		log.Error().Err(err).Send()
 		w.WriteHeader(http.StatusInternalServerError)
 	}
-	w.WriteHeader(http.StatusOK)
 }
