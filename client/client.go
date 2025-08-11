@@ -13,28 +13,35 @@ import (
 	"golang.org/x/net/proxy"
 )
 
+const baseURL = "https://discord.com/api"
+
 var client *http.Client
 
 func Init() {
 	dial := proxy.FromEnvironment().(proxy.ContextDialer)
 	client = &http.Client{
 		Transport: &http.Transport{
-			Proxy:       http.ProxyFromEnvironment,
-			DialContext: dial.DialContext,
+			Proxy:                 http.ProxyFromEnvironment,
+			DialContext:           dial.DialContext,
+			ForceAttemptHTTP2:     true,
+			MaxIdleConns:          100,
+			IdleConnTimeout:       90 * time.Second,
+			TLSHandshakeTimeout:   10 * time.Second,
+			ExpectContinueTimeout: time.Second,
 		},
-		Timeout: time.Second,
+		Timeout: 10 * time.Second,
 	}
 }
 
 func ExecuteWebhook(eventResult *structs.Webhook, creds structs.Credentials) error {
-	url := fmt.Sprintf("https://discord.com/api/webhooks/%s/%s", creds.ID, creds.Token)
+	url := fmt.Sprintf("%s/webhooks/%s/%s", baseURL, creds.ID, creds.Token)
 
 	body, err := sonic.Marshal(eventResult)
 	if err != nil {
 		return err
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewReader(body))
