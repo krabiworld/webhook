@@ -15,6 +15,13 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+const (
+	githubEvent           = "X-GitHub-Event"
+	githubSignature       = "X-Hub-Signature-256"
+	githubSignaturePrefix = "sha256="
+	githubUserAgentPrefix = "GitHub-Hookshot/"
+)
+
 func webhook(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		w.Header().Set("Allow", http.MethodPost)
@@ -29,14 +36,14 @@ func webhook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	eventHeader := r.Header.Get("X-GitHub-Event")
+	eventHeader := r.Header.Get(githubEvent)
 	if eventHeader == "" {
 		http.Error(w, "Missing event", http.StatusBadRequest)
 		return
 	}
 
 	userAgent := r.Header.Get("User-Agent")
-	if userAgent == "" || !strings.HasPrefix(userAgent, "GitHub-Hookshot/") {
+	if userAgent == "" || !strings.HasPrefix(userAgent, githubUserAgentPrefix) {
 		http.Error(w, "Incorrect user agent", http.StatusBadRequest)
 		return
 	}
@@ -59,7 +66,7 @@ func webhook(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	if secret := config.Get().Secret; secret != "" {
-		sig := r.Header.Get("X-Hub-Signature-256")
+		sig := r.Header.Get(githubSignature)
 		if sig == "" {
 			http.Error(w, "Missing signature", http.StatusUnauthorized)
 			return
@@ -69,13 +76,12 @@ func webhook(w http.ResponseWriter, r *http.Request) {
 		mac.Write(body)
 		expectedMAC := mac.Sum(nil)
 
-		const prefix = "sha256="
-		if !strings.HasPrefix(sig, prefix) {
+		if !strings.HasPrefix(sig, githubSignaturePrefix) {
 			http.Error(w, "Invalid signature format", http.StatusBadRequest)
 			return
 		}
 
-		receivedSig, err := hex.DecodeString(sig[len(prefix):])
+		receivedSig, err := hex.DecodeString(sig[len(githubSignaturePrefix):])
 		if err != nil {
 			http.Error(w, "Invalid signature hex", http.StatusBadRequest)
 			return
