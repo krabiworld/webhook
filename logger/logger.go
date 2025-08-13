@@ -35,5 +35,5 @@ func Init() {
 		zerolog.SetGlobalLevel(zeroLogLevel)
 	}
 
-	log.Info().Msg("Logger successfully initialized")
+	log.Info().Str("logLevel", logLevel).Msg("Logger successfully initialized")
 }
