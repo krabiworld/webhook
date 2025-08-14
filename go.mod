@@ -1,6 +1,6 @@
 module webhook
 
-go 1.24.6
+go 1.25.0
 
 require (
 	github.com/bytedance/sonic v1.14.0
