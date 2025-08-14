@@ -4,8 +4,22 @@ A beautiful GitHub webhook proxy for Discord
 
 ## Installation
 
+**Docker:**
+
 ```shell
 docker run --name webhook -d -p 8080:8080 ghcr.io/krabiworld/webhook
+```
+
+**Docker Compose:**
+
+```yaml
+services:
+  webhook:
+    image: "ghcr.io/krabiworld/webhook"
+    ports:
+      - "8080:8080"
+    environment:
+      - SECRET=random-string
 ```
 
 ## Configuration
