@@ -1,27 +1,25 @@
-package parser
+package handlers
 
 import (
 	"slices"
 	"webhook/client"
 	"webhook/config"
-	"webhook/structs"
+	"webhook/structs/discord"
+	"webhook/structs/github"
 
 	"github.com/bytedance/sonic"
 	"github.com/rs/zerolog/log"
 )
 
 type Event interface {
-	handle() (*structs.Webhook, error)
+	handle() (*discord.Webhook, error)
 }
 
 type metaEvent struct {
-	Repository struct {
-		Name    string `json:"name"`
-		Private bool   `json:"private"`
-	} `json:"repository"`
+	Repository github.Repository `json:"repository"`
 }
 
-func parseEvent[T Event](body []byte) (*structs.Webhook, error) {
+func parseEvent[T Event](body []byte) (*discord.Webhook, error) {
 	var e T
 	if err := sonic.Unmarshal(body, &e); err != nil {
 		return nil, err
@@ -29,7 +27,7 @@ func parseEvent[T Event](body []byte) (*structs.Webhook, error) {
 	return e.handle()
 }
 
-var eventParsers = map[string]func([]byte) (*structs.Webhook, error){
+var eventParsers = map[string]func([]byte) (*discord.Webhook, error){
 	"push":         parseEvent[*push],
 	"workflow_run": parseEvent[*workflowRun],
 	"star":         parseEvent[*star],
@@ -37,7 +35,7 @@ var eventParsers = map[string]func([]byte) (*structs.Webhook, error){
 	"release":      parseEvent[*release],
 }
 
-func Parse(event string, body []byte, creds structs.Credentials) {
+func Parse(event string, body []byte, creds discord.Credentials) {
 	if len(config.Get().DisabledEvents) > 0 && slices.Contains(config.Get().DisabledEvents, event) {
 		log.Debug().Str("event", event).Msg("Ignoring event")
 		return

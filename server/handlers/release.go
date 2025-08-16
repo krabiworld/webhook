@@ -1,22 +1,23 @@
-package parser
+package handlers
 
 import (
 	"fmt"
-	"webhook/structs"
+	"webhook/structs/discord"
+	"webhook/structs/github"
 )
 
 type release struct {
-	Action  string          `json:"action"`
-	Release structs.Release `json:"release"`
-	Sender  structs.User    `json:"sender"`
+	Action  string         `json:"action"`
+	Release github.Release `json:"release"`
+	Sender  github.User    `json:"sender"`
 }
 
-func (e *release) handle() (*structs.Webhook, error) {
+func (e *release) handle() (*discord.Webhook, error) {
 	if e.Action != "published" {
 		return nil, nil
 	}
 
-	return &structs.Webhook{
+	return &discord.Webhook{
 		Content: fmt.Sprintf(
 			"[%s](<%s>) published release [%s](<%s>)",
 			e.Sender.Login,

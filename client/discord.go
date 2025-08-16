@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"time"
-	"webhook/structs"
+	"webhook/structs/discord"
 
 	"github.com/bytedance/sonic"
 	"github.com/rs/zerolog/log"
@@ -33,7 +33,7 @@ func Init() {
 	}
 }
 
-func ExecuteWebhook(eventResult *structs.Webhook, creds structs.Credentials) error {
+func ExecuteWebhook(eventResult *discord.Webhook, creds discord.Credentials) error {
 	url := fmt.Sprintf("%s/webhooks/%s/%s", baseURL, creds.ID, creds.Token)
 
 	body, err := sonic.Marshal(eventResult)

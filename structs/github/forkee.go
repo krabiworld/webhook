@@ -1,4 +1,4 @@
-package structs
+package github
 
 type Forkee struct {
 	Name    string `json:"name"`

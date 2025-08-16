@@ -1,20 +1,21 @@
-package parser
+package handlers
 
 import (
 	"fmt"
 	"slices"
 	"webhook/config"
-	"webhook/structs"
+	"webhook/structs/discord"
+	"webhook/structs/github"
 )
 
 type workflowRun struct {
-	Action      string              `json:"action"`
-	Workflow    structs.Workflow    `json:"workflow"`
-	WorkflowRun structs.WorkflowRun `json:"workflowRun"`
-	Repository  structs.Repository  `json:"repository"`
+	Action      string             `json:"action"`
+	Workflow    github.Workflow    `json:"workflow"`
+	WorkflowRun github.WorkflowRun `json:"workflowRun"`
+	Repository  github.Repository  `json:"repository"`
 }
 
-func (e *workflowRun) handle() (*structs.Webhook, error) {
+func (e *workflowRun) handle() (*discord.Webhook, error) {
 	if e.Action != "completed" || e.WorkflowRun.Conclusion == "" {
 		return nil, nil
 	}
@@ -28,7 +29,7 @@ func (e *workflowRun) handle() (*structs.Webhook, error) {
 		emoji = config.Get().FailureEmoji
 	}
 
-	return &structs.Webhook{
+	return &discord.Webhook{
 		Content: fmt.Sprintf(
 			"%s Workflow [%s](<%s>) on [%s](<%s>)/[%[6]s](<%[5]s/tree/%[6]s>)",
 			emoji,

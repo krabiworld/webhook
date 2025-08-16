@@ -1,21 +1,22 @@
-package parser
+package handlers
 
 import (
 	"fmt"
 	"regexp"
 	"strings"
-	"webhook/structs"
+	"webhook/structs/discord"
+	"webhook/structs/github"
 )
 
 type push struct {
-	Commits    []structs.Commit   `json:"commits"`
-	Ref        string             `json:"ref"`
-	Sender     structs.User       `json:"sender"`
-	Pusher     structs.User       `json:"pusher"`
-	Repository structs.Repository `json:"repository"`
+	Commits    []github.Commit   `json:"commits"`
+	Ref        string            `json:"ref"`
+	Sender     github.User       `json:"sender"`
+	Pusher     github.User       `json:"pusher"`
+	Repository github.Repository `json:"repository"`
 }
 
-func (e *push) handle() (*structs.Webhook, error) {
+func (e *push) handle() (*discord.Webhook, error) {
 	if len(e.Commits) == 0 {
 		return nil, nil
 	}
@@ -73,7 +74,7 @@ func (e *push) handle() (*structs.Webhook, error) {
 		commits.WriteString(truncated + "\n")
 	}
 
-	return &structs.Webhook{
+	return &discord.Webhook{
 		Content:   commits.String() + footer,
 		Username:  e.Pusher.Name,
 		AvatarUrl: e.Sender.AvatarURL,

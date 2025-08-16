@@ -9,8 +9,8 @@ import (
 	"net/http"
 	"strings"
 	"webhook/config"
-	"webhook/parser"
-	"webhook/structs"
+	"webhook/server/handlers"
+	"webhook/structs/discord"
 
 	"github.com/rs/zerolog/log"
 )
@@ -93,11 +93,11 @@ func webhook(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	creds := structs.Credentials{
+	creds := discord.Credentials{
 		ID:    parts[0],
 		Token: parts[1],
 	}
 
 	w.WriteHeader(http.StatusNoContent)
-	go parser.Parse(eventHeader, body, creds)
+	go handlers.Parse(eventHeader, body, creds)
 }

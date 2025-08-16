@@ -1,4 +1,4 @@
-package structs
+package github
 
 type Commit struct {
 	Id      string `json:"id"`

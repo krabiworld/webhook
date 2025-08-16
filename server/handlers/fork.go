@@ -1,17 +1,18 @@
-package parser
+package handlers
 
 import (
 	"fmt"
-	"webhook/structs"
+	"webhook/structs/discord"
+	"webhook/structs/github"
 )
 
 type fork struct {
-	Sender structs.User   `json:"sender"`
-	Forkee structs.Forkee `json:"forkee"`
+	Sender github.User   `json:"sender"`
+	Forkee github.Forkee `json:"forkee"`
 }
 
-func (e *fork) handle() (*structs.Webhook, error) {
-	return &structs.Webhook{
+func (e *fork) handle() (*discord.Webhook, error) {
+	return &discord.Webhook{
 		Content: fmt.Sprintf(
 			"[%s](<%s>) forked [%s](<%s>)",
 			e.Sender.Login,

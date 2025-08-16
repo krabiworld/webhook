@@ -1,4 +1,4 @@
-package structs
+package discord
 
 type Credentials struct {
 	ID    string

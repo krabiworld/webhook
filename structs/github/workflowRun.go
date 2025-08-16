@@ -1,4 +1,4 @@
-package structs
+package github
 
 type WorkflowRun struct {
 	Conclusion string `json:"conclusion"`
