@@ -6,6 +6,8 @@ import (
 	"webhook/config"
 	"webhook/structs/discord"
 	"webhook/structs/github"
+
+	"github.com/rs/zerolog/log"
 )
 
 type workflowRun struct {
@@ -21,6 +23,7 @@ func (e *workflowRun) handle() (*discord.Webhook, error) {
 	}
 
 	if slices.Contains(config.Get().IgnoredWorkflows, e.Workflow.Name) {
+		log.Debug().Str("workflow", e.Workflow.Name).Msg("Ignored workflow")
 		return nil, nil
 	}
 
