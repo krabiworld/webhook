@@ -43,7 +43,7 @@ func Parse(event string, body []byte, creds discord.Credentials) {
 
 	parser, ok := eventParsers[event]
 	if !ok {
-		log.Error().Str("event", event).Msg("Unknown event")
+		log.Debug().Str("event", event).Msg("Unknown event")
 		return
 	}
 

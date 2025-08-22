@@ -13,7 +13,7 @@ import (
 type workflowRun struct {
 	Action      string             `json:"action"`
 	Workflow    github.Workflow    `json:"workflow"`
-	WorkflowRun github.WorkflowRun `json:"workflowRun"`
+	WorkflowRun github.WorkflowRun `json:"workflow_run"`
 	Repository  github.Repository  `json:"repository"`
 }
 
