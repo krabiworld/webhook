@@ -7,6 +7,7 @@ import (
 
 type Config struct {
 	LogLevel                  string   `env:"LOG_LEVEL" envDefault:"info"`
+	LogMode                   string   `env:"LOG_MODE" envDefault:"json"`
 	Address                   string   `env:"ADDR" envDefault:":8080"`
 	Secret                    string   `env:"SECRET"`
 	HappyEmoji                string   `env:"HAPPY_EMOJI"`
