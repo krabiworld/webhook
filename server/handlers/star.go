@@ -38,6 +38,6 @@ func (e *star) handle() (*discord.Webhook, error) {
 			config.Get().HappyEmoji,
 		),
 		Username:  e.Sender.Login,
-		AvatarUrl: e.Sender.AvatarURL,
+		AvatarUrl: e.Sender.AvatarUrl,
 	}, nil
 }

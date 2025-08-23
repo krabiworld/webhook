@@ -21,6 +21,6 @@ func (e *fork) handle() (*discord.Webhook, error) {
 			e.Forkee.HtmlUrl,
 		),
 		Username:  e.Sender.Login,
-		AvatarUrl: e.Sender.AvatarURL,
+		AvatarUrl: e.Sender.AvatarUrl,
 	}, nil
 }

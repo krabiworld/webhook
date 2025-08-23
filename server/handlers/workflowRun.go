@@ -43,6 +43,6 @@ func (e *workflowRun) handle() (*discord.Webhook, error) {
 			e.WorkflowRun.HeadBranch,
 		),
 		Username:  e.Workflow.Name,
-		AvatarUrl: e.Repository.Owner.AvatarURL,
+		AvatarUrl: e.Repository.Owner.AvatarUrl,
 	}, nil
 }

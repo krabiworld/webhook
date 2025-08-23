@@ -26,6 +26,6 @@ func (e *release) handle() (*discord.Webhook, error) {
 			e.Release.HtmlUrl,
 		),
 		Username:  e.Sender.Login,
-		AvatarUrl: e.Sender.AvatarURL,
+		AvatarUrl: e.Sender.AvatarUrl,
 	}, nil
 }

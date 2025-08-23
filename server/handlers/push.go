@@ -77,6 +77,6 @@ func (e *push) handle() (*discord.Webhook, error) {
 	return &discord.Webhook{
 		Content:   commits.String() + footer,
 		Username:  e.Pusher.Name,
-		AvatarUrl: e.Sender.AvatarURL,
+		AvatarUrl: e.Sender.AvatarUrl,
 	}, nil
 }
