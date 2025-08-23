@@ -1,41 +1,48 @@
 package debouncer
 
 import (
-	"sync"
 	"time"
+	"webhook/cache"
+	"webhook/codec"
+	"webhook/config"
 
 	"github.com/rs/zerolog/log"
 )
 
 type Debouncer struct {
-	mu   sync.Mutex
-	data map[string]bool
+	cache.Cache[bool]
 }
 
-var debouncer = &Debouncer{data: make(map[string]bool)}
+var debouncer *Debouncer
 
-func Debounce(event, username, repository string, timeout time.Duration) bool {
+func Init() {
+	switch config.Get().StorageBackend {
+	case "memory":
+		debouncer = &Debouncer{cache.NewMemory[bool]()}
+	case "redis":
+		c, err := cache.NewRedis(config.Get().RedisUrl, codec.BoolCodec{})
+		if err != nil {
+			log.Fatal().Err(err).Msg("Failed to create redis client")
+		}
+
+		debouncer = &Debouncer{c}
+	}
+}
+
+func Debounce(event, username, repository string, ttl time.Duration) bool {
 	key := event + "-" + username + "-" + repository
 
-	debouncer.mu.Lock()
-
-	if _, ok := debouncer.data[key]; ok {
-		debouncer.mu.Unlock()
+	if ok, _ := debouncer.Exists(key); ok {
 		return false
 	}
 
-	debouncer.data[key] = true
-	debouncer.mu.Unlock()
+	err := debouncer.Set(key, true, ttl)
+	if err != nil {
+		log.Error().Err(err).Str("key", key).Send()
+		return false
+	}
 
-	log.Debug().Str("key", key).Dur("duration", timeout).Msg("Event debounced")
-
-	time.AfterFunc(timeout, func() {
-		debouncer.mu.Lock()
-		delete(debouncer.data, key)
-		debouncer.mu.Unlock()
-
-		log.Debug().Str("key", key).Dur("duration", timeout).Msg("Event released from debouncer")
-	})
+	log.Debug().Str("key", key).Dur("duration", ttl).Msg("Event debounced")
 
 	return true
 }

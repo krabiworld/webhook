@@ -10,6 +10,8 @@ type Config struct {
 	LogMode                   string   `env:"LOG_MODE" envDefault:"json"`
 	Address                   string   `env:"ADDR" envDefault:":8080"`
 	Secret                    string   `env:"SECRET"`
+	StorageBackend            string   `env:"STORAGE_BACKEND" envDefault:"memory"`
+	RedisUrl                  string   `env:"REDIS_URL"`
 	HappyEmoji                string   `env:"HAPPY_EMOJI"`
 	SuccessEmoji              string   `env:"SUCCESS_EMOJI"`
 	FailureEmoji              string   `env:"FAILURE_EMOJI"`
