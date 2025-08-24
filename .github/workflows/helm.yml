@@ -1,0 +1,39 @@
+name: Publish Helm chart
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/helm.yml'
+      - 'helm/**'
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@184bdaa0721073962dff0199f1fb9940f07167d1 # v3.5.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Package chart
+        run: helm package helm
+
+      - name: Push chart
+        run: helm push webhook-*.tgz oci://${{ env.REGISTRY }}/${{ github.actor }}

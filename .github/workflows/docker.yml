@@ -1,9 +1,18 @@
-name: Create and publish a Docker image
+name: Publish Docker image
 
 on:
   push:
     branches:
       - main
+    paths-ignore:
+      - '.github/workflows/docker.yml'
+      - '.github/workflows/helm.yml'
+      - '.github/dependabot.yml'
+      - 'helm/**'
+      - '.env.example'
+      - '.gitignore'
+      - 'LICENSE'
+      - 'README.md'
 
 env:
   REGISTRY: ghcr.io

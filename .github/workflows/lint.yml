@@ -4,7 +4,17 @@ on:
   push:
     branches:
       - main
+    paths-ignore: &common_ignores
+      - '.github/workflows/docker.yml'
+      - '.github/workflows/helm.yml'
+      - '.github/dependabot.yml'
+      - 'helm/**'
+      - '.env.example'
+      - '.gitignore'
+      - 'LICENSE'
+      - 'README.md'
   pull_request:
+    paths-ignore: *common_ignores
 
 permissions:
   contents: read
