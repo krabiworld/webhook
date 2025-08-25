@@ -18,7 +18,7 @@ type Config struct {
 	DisabledEvents            []string `env:"DISABLED_EVENTS"`
 	IgnorePrivateRepositories bool     `env:"IGNORE_PRIVATE_REPOSITORIES" envDefault:"false"`
 	IgnoredRepositories       []string `env:"IGNORED_REPOSITORIES"`
-	IgnoredWorkflows          []string `env:"IGNORED_WORKFLOW"`
+	IgnoredWorkflows          []string `env:"IGNORED_WORKFLOWS"`
 }
 
 var cfg *Config
