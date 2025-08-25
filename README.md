@@ -34,7 +34,7 @@ See [.env.example](.env.example) for example
 
 ## Endpoints
 
-- `/:id/:token?ignoreWorkflows=CodeQL`
+- `/:id/:token?ignoredWorkflows=CodeQL,Lint`
 - `/health`
 
 ## Proxy support
