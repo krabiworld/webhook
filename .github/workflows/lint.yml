@@ -10,6 +10,7 @@ on:
       - '.github/dependabot.yml'
       - 'helm/**'
       - '.env.example'
+      - '.gitattributes'
       - '.gitignore'
       - 'LICENSE'
       - 'README.md'
