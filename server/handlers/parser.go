@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"net/url"
 	"slices"
 	"webhook/client"
 	"webhook/config"
@@ -12,22 +13,22 @@ import (
 )
 
 type Event interface {
-	handle() (*discord.Webhook, error)
+	handle(queries url.Values) (*discord.Webhook, error)
 }
 
 type metaEvent struct {
 	Repository github.Repository `json:"repository"`
 }
 
-func parseEvent[T Event](body []byte) (*discord.Webhook, error) {
+func parseEvent[T Event](body []byte, queries url.Values) (*discord.Webhook, error) {
 	var e T
 	if err := sonic.Unmarshal(body, &e); err != nil {
 		return nil, err
 	}
-	return e.handle()
+	return e.handle(queries)
 }
 
-var eventParsers = map[string]func([]byte) (*discord.Webhook, error){
+var eventParsers = map[string]func([]byte, url.Values) (*discord.Webhook, error){
 	"push":         parseEvent[*push],
 	"workflow_run": parseEvent[*workflowRun],
 	"star":         parseEvent[*star],
@@ -35,7 +36,7 @@ var eventParsers = map[string]func([]byte) (*discord.Webhook, error){
 	"release":      parseEvent[*release],
 }
 
-func Parse(event string, body []byte, creds discord.Credentials) {
+func Parse(event string, body []byte, queries url.Values, creds discord.Credentials) {
 	if len(config.Get().DisabledEvents) > 0 && slices.Contains(config.Get().DisabledEvents, event) {
 		log.Debug().Str("event", event).Msg("Ignoring event")
 		return
@@ -63,7 +64,7 @@ func Parse(event string, body []byte, creds discord.Credentials) {
 		return
 	}
 
-	eventResult, err := parser(body)
+	eventResult, err := parser(body, queries)
 	if err != nil {
 		log.Error().Err(err).Send()
 		return

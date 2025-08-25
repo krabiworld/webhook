@@ -96,6 +96,8 @@ func webhook(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	queries := r.URL.Query()
+
 	w.WriteHeader(http.StatusNoContent)
-	go handlers.Parse(eventHeader, body, discord.Credentials{ID: parts[0], Token: parts[1]})
+	go handlers.Parse(eventHeader, body, queries, discord.Credentials{ID: parts[0], Token: parts[1]})
 }

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"net/url"
 	"webhook/structs/discord"
 	"webhook/structs/github"
 )
@@ -11,7 +12,7 @@ type fork struct {
 	Forkee github.Forkee `json:"forkee"`
 }
 
-func (e *fork) handle() (*discord.Webhook, error) {
+func (e *fork) handle(url.Values) (*discord.Webhook, error) {
 	return &discord.Webhook{
 		Content: fmt.Sprintf(
 			"[%s](<%s>) forked [%s](<%s>)",
