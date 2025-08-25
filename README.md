@@ -22,9 +22,20 @@ services:
       - SECRET=random-string
 ```
 
+**Kubernetes**
+
+```shell
+helm install webhook oci://ghcr.io/krabiworld/webhook
+```
+
 ## Configuration
 
 See [.env.example](.env.example) for example
+
+## Endpoints
+
+- `/:id/:token`
+- `/health`
 
 ## Proxy support
 
