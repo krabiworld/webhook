@@ -2,11 +2,41 @@ package server
 
 import (
 	"net/http"
+	"strings"
 	"time"
 	"webhook/config"
 
 	"github.com/rs/zerolog/log"
 )
+
+var routes = map[string]string{
+	"/health": "/health",
+	"/":       "/:id/:token",
+}
+
+func sanitizePath(path string) string {
+	if v, ok := routes[path]; ok {
+		return v
+	}
+
+	for prefix, pattern := range routes {
+		if prefix == "/" {
+			continue
+		}
+		if strings.HasPrefix(path, prefix) {
+			return pattern
+		}
+	}
+
+	if pattern, ok := routes["/"]; ok {
+		parts := strings.Split(strings.Trim(path, "/"), "/")
+		if len(parts) == 2 {
+			return pattern
+		}
+	}
+
+	return path
+}
 
 func loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -14,7 +44,7 @@ func loggingMiddleware(next http.Handler) http.Handler {
 
 		next.ServeHTTP(w, r)
 
-		log.Debug().Str("addr", r.RemoteAddr).Str("method", r.Method).Str("path", r.URL.Path).Dur("ts", time.Since(start)).Send()
+		log.Debug().Str("addr", r.RemoteAddr).Str("method", r.Method).Str("path", sanitizePath(r.URL.Path)).Dur("ts", time.Since(start)).Send()
 	})
 }
 
