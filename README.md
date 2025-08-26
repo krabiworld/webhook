@@ -34,8 +34,23 @@ See [.env.example](.env.example) for example
 
 ## Endpoints
 
-- `/:id/:token?ignoredWorkflows=CodeQL,Lint`
-- `/health`
+- GET `/health`
+- POST `/:id/:token`
+
+Query parameters:
+```
+- ignoredWorkflows=CodeQL,Lint
+- ignoredChecks=Cloudflare,Vercel
+```
+
+## Implemented events
+
+- `check_run`
+- `fork`
+- `push`
+- `release`
+- `star`
+- `workflow_run`
 
 ## Proxy support
 
