@@ -2,9 +2,9 @@ package handlers
 
 import (
 	"fmt"
-	"net/url"
 	"time"
 	"webhook/config"
+	"webhook/context"
 	"webhook/debouncer"
 	"webhook/structs/discord"
 	"webhook/structs/github"
@@ -18,7 +18,7 @@ type star struct {
 	Repository github.Repository `json:"repository"`
 }
 
-func (e *star) handle(url.Values) (*discord.Webhook, error) {
+func (e *star) handle(*context.Context) (*discord.Webhook, error) {
 	if e.Action != "created" {
 		return nil, nil
 	}

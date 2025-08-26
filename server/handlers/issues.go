@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"fmt"
-	"net/url"
+	"webhook/context"
 	"webhook/structs/discord"
 	"webhook/structs/github"
 )
@@ -14,7 +14,7 @@ type issues struct {
 	Sender     github.User       `json:"sender"`
 }
 
-func (e *issues) handle(url.Values) (*discord.Webhook, error) {
+func (e *issues) handle(*context.Context) (*discord.Webhook, error) {
 	return &discord.Webhook{
 		Content: fmt.Sprintf(
 			"[%s](<%s>) %s issue [%s](<%s>) in [%s](<%s>)/[%s](<%s>)",

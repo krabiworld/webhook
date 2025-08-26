@@ -38,9 +38,11 @@ See [.env.example](.env.example) for example
 - POST `/:id/:token`
 
 Query parameters:
+
 ```
-- ignoredWorkflows=CodeQL,Lint
-- ignoredChecks=Cloudflare,Vercel
+ignoredEvents=check_run,workflow_run 
+ignoredChecks=Cloudflare,Vercel
+ignoredWorkflows=CodeQL,Lint
 ```
 
 ## Implemented events

@@ -2,10 +2,9 @@ package handlers
 
 import (
 	"fmt"
-	"net/url"
 	"slices"
-	"strings"
 	"webhook/config"
+	"webhook/context"
 	"webhook/structs/discord"
 	"webhook/structs/github"
 
@@ -19,12 +18,12 @@ type workflowRun struct {
 	Repository  github.Repository  `json:"repository"`
 }
 
-func (e *workflowRun) handle(queries url.Values) (*discord.Webhook, error) {
+func (e *workflowRun) handle(ctx *context.Context) (*discord.Webhook, error) {
 	if e.Action != "completed" || e.WorkflowRun.Conclusion == "" {
 		return nil, nil
 	}
 
-	if slices.Contains(config.Get().IgnoredWorkflows, e.Workflow.Name) || slices.Contains(strings.Split(queries.Get("ignoredWorkflows"), ","), e.Workflow.Name) {
+	if slices.Contains(config.Get().IgnoredWorkflows, e.Workflow.Name) || slices.Contains(ctx.IgnoredWorkflows(), e.Workflow.Name) {
 		log.Debug().Str("workflow", e.Workflow.Name).Msg("Ignored workflow")
 		return nil, nil
 	}

@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"fmt"
-	"net/url"
 	"strings"
+	"webhook/context"
 	"webhook/structs/discord"
 	"webhook/structs/github"
 )
@@ -15,7 +15,7 @@ type pullRequest struct {
 	Sender      github.User        `json:"sender"`
 }
 
-func (e *pullRequest) handle(url.Values) (*discord.Webhook, error) {
+func (e *pullRequest) handle(*context.Context) (*discord.Webhook, error) {
 	if strings.Contains(e.Action, "_") || e.Action == "synchronize" {
 		return nil, nil
 	}

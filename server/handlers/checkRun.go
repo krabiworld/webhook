@@ -2,10 +2,9 @@ package handlers
 
 import (
 	"fmt"
-	"net/url"
 	"slices"
-	"strings"
 	"webhook/config"
+	"webhook/context"
 	"webhook/structs/discord"
 	"webhook/structs/github"
 
@@ -18,12 +17,12 @@ type checkRun struct {
 	Repository github.Repository `json:"repository"`
 }
 
-func (e *checkRun) handle(queries url.Values) (*discord.Webhook, error) {
+func (e *checkRun) handle(ctx *context.Context) (*discord.Webhook, error) {
 	if e.Action != "completed" || e.CheckRun.Conclusion == "" || e.CheckRun.App.Name == "GitHub Actions" {
 		return nil, nil
 	}
 
-	if slices.Contains(strings.Split(queries.Get("ignoredChecks"), ","), e.CheckRun.App.Name) {
+	if slices.Contains(ctx.IgnoredChecks(), e.CheckRun.App.Name) {
 		log.Debug().Str("check", e.CheckRun.App.Name).Msg("Ignored check")
 		return nil, nil
 	}

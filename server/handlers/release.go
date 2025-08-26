@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"fmt"
-	"net/url"
+	"webhook/context"
 	"webhook/structs/discord"
 	"webhook/structs/github"
 )
@@ -13,7 +13,7 @@ type release struct {
 	Sender  github.User    `json:"sender"`
 }
 
-func (e *release) handle(url.Values) (*discord.Webhook, error) {
+func (e *release) handle(*context.Context) (*discord.Webhook, error) {
 	if e.Action != "published" {
 		return nil, nil
 	}

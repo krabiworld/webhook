@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"strings"
 	"webhook/config"
+	"webhook/context"
 	"webhook/server/handlers"
 	"webhook/structs/discord"
 
@@ -96,8 +97,8 @@ func webhook(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	queries := r.URL.Query()
+	ctx := context.NewContext(r.URL.Query())
 
 	w.WriteHeader(http.StatusNoContent)
-	go handlers.Parse(eventHeader, body, queries, discord.Credentials{ID: parts[0], Token: parts[1]})
+	go handlers.Parse(eventHeader, body, ctx, discord.Credentials{ID: parts[0], Token: parts[1]})
 }

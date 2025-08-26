@@ -2,9 +2,9 @@ package handlers
 
 import (
 	"fmt"
-	"net/url"
 	"regexp"
 	"strings"
+	"webhook/context"
 	"webhook/structs/discord"
 	"webhook/structs/github"
 )
@@ -17,7 +17,7 @@ type push struct {
 	Repository github.Repository `json:"repository"`
 }
 
-func (e *push) handle(url.Values) (*discord.Webhook, error) {
+func (e *push) handle(*context.Context) (*discord.Webhook, error) {
 	if len(e.Commits) == 0 {
 		return nil, nil
 	}
