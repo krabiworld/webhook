@@ -19,7 +19,7 @@ type checkRun struct {
 }
 
 func (e *checkRun) handle(queries url.Values) (*discord.Webhook, error) {
-	if e.Action != "completed" || e.CheckRun.Conclusion == "" {
+	if e.Action != "completed" || e.CheckRun.Conclusion == "" || e.CheckRun.App.Name == "GitHub Actions" {
 		return nil, nil
 	}
 
