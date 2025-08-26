@@ -29,12 +29,15 @@ func parseEvent[T Event](body []byte, queries url.Values) (*discord.Webhook, err
 }
 
 var eventParsers = map[string]func([]byte, url.Values) (*discord.Webhook, error){
-	"check_run":    parseEvent[*checkRun],
-	"fork":         parseEvent[*fork],
-	"push":         parseEvent[*push],
-	"release":      parseEvent[*release],
-	"star":         parseEvent[*star],
-	"workflow_run": parseEvent[*workflowRun],
+	"check_run":     parseEvent[*checkRun],
+	"fork":          parseEvent[*fork],
+	"issue_comment": parseEvent[*issueComment],
+	"issues":        parseEvent[*issues],
+	"pull_request":  parseEvent[*pullRequest],
+	"push":          parseEvent[*push],
+	"release":       parseEvent[*release],
+	"star":          parseEvent[*star],
+	"workflow_run":  parseEvent[*workflowRun],
 }
 
 func Parse(event string, body []byte, queries url.Values, creds discord.Credentials) {

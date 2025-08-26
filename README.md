@@ -47,6 +47,9 @@ Query parameters:
 
 - `check_run`
 - `fork`
+- `issue_comment`
+- `issues`
+- `pull_request`
 - `push`
 - `release`
 - `star`
