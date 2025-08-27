@@ -10,7 +10,7 @@ import (
 	"strings"
 	"webhook/config"
 	"webhook/context"
-	"webhook/server/handlers"
+	"webhook/events"
 	"webhook/structs/discord"
 
 	"github.com/rs/zerolog/log"
@@ -100,5 +100,5 @@ func webhook(w http.ResponseWriter, r *http.Request) {
 	ctx := context.NewContext(r.URL.Query())
 
 	w.WriteHeader(http.StatusNoContent)
-	go handlers.Parse(eventHeader, body, ctx, discord.Credentials{ID: parts[0], Token: parts[1]})
+	go events.Parse(eventHeader, body, ctx, discord.Credentials{ID: parts[0], Token: parts[1]})
 }
