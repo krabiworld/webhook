@@ -7,11 +7,11 @@ import (
 
 type BoolCodec struct{}
 
-func (c BoolCodec) Encode(v bool) (string, error) {
+func (BoolCodec) Encode(v bool) (string, error) {
 	return strconv.FormatBool(v), nil
 }
 
-func (c BoolCodec) Decode(s string) (bool, error) {
+func (BoolCodec) Decode(s string) (bool, error) {
 	v, err := strconv.ParseBool(s)
 	if err != nil {
 		return false, fmt.Errorf("BoolCodec: failed to parse %q as bool: %w", s, err)

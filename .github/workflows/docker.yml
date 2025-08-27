@@ -5,8 +5,9 @@ on:
     branches:
       - main
     paths-ignore:
-      - '.github/workflows/docker.yml'
       - '.github/workflows/helm.yml'
+      - '.github/workflows/lint.yml'
+      - '.github/workflows/test.yml'
       - '.github/dependabot.yml'
       - 'helm/**'
       - '.env.example'

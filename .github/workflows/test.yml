@@ -1,4 +1,4 @@
-name: Lint
+name: Test
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     paths-ignore: &common_ignores
       - '.github/workflows/docker.yml'
       - '.github/workflows/helm.yml'
-      - '.github/workflows/test.yml'
+      - '.github/workflows/lint.yml'
       - '.github/dependabot.yml'
       - 'helm/**'
       - '.env.example'
@@ -23,17 +23,19 @@ permissions:
   pull-requests: read
 
 jobs:
-  lint:
+  tests:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-go@v5
+      - name: Setup Go
+        uses: actions/setup-go@v5
         with:
-          go-version: stable
+          go-version-file: go.mod
 
-      - name: Lint
-        uses: golangci/golangci-lint-action@4afd733a84b1f43292c63897423277bb7f4313a9 # v8
-        with:
-          only-new-issues: true
+      - name: Download dependencies
+        run: go mod download
+
+      - name: Run tests
+        run: go test ./... -v -race
