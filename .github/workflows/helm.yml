@@ -18,6 +18,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      pages: write
       attestations: write
       id-token: write
 
@@ -37,3 +38,20 @@ jobs:
 
       - name: Push chart
         run: helm push webhook-*.tgz oci://${{ env.REGISTRY }}/${{ github.actor }}
+
+      - name: Create index file
+        run: |
+          helm repo index . --url https://krabiworld.github.io/webhook/
+          mkdir helm-index
+          mv index.yaml helm-index
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './helm-index'
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4

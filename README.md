@@ -1,6 +1,8 @@
 # Webhook
 
 ![Build](https://github.com/krabiworld/webhook/actions/workflows/test.yml/badge.svg)
+![Docker Pulls](https://img.shields.io/docker/pulls/krabiworld/webhook)
+![Image Size](https://img.shields.io/docker/image-size/krabiworld/webhook/latest)
 ![License](https://img.shields.io/github/license/krabiworld/webhook)
 ![GitHub stars](https://img.shields.io/github/stars/krabiworld/webhook?style=social)
 
@@ -11,7 +13,7 @@ A beautiful GitHub webhook proxy for Discord
 **Docker:**
 
 ```shell
-docker run --name webhook -d -p 8080:8080 ghcr.io/krabiworld/webhook
+docker run --name webhook -d -p 8080:8080 krabiworld/webhook
 ```
 
 **Docker Compose:**
@@ -19,7 +21,7 @@ docker run --name webhook -d -p 8080:8080 ghcr.io/krabiworld/webhook
 ```yaml
 services:
   webhook:
-    image: "ghcr.io/krabiworld/webhook"
+    image: "krabiworld/webhook"
     ports:
       - "8080:8080"
 ```
@@ -27,7 +29,8 @@ services:
 **Kubernetes**
 
 ```shell
-helm install webhook oci://ghcr.io/krabiworld/webhook
+helm repo add webhook https://krabiworld.github.io/webhook
+helm install webhook webhook/webhook
 ```
 
 See [helm/values.yaml](helm/values.yaml)
