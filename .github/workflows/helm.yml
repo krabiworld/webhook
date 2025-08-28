@@ -12,7 +12,7 @@ env:
   REGISTRY: ghcr.io
 
 jobs:
-  build-and-push-image:
+  publish-helm:
     runs-on: ubuntu-latest
 
     permissions:
@@ -34,16 +34,15 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Package chart
-        run: helm package helm
+        run: helm package helm -d dist
 
       - name: Push chart
+        working-directory: dist
         run: helm push webhook-*.tgz oci://${{ env.REGISTRY }}/${{ github.actor }}
 
-      - name: Create index file
-        run: |
-          helm repo index . --url https://krabiworld.github.io/webhook/
-          mkdir helm-index
-          mv index.yaml helm-index
+      - name: Create repository index
+        working-directory: dist
+        run: helm repo index . --url https://krabiworld.github.io/webhook/
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -51,7 +50,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './helm-index'
+          path: './dist'
 
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
