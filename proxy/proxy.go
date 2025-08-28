@@ -1,11 +1,12 @@
 package proxy
 
 import (
-	"fmt"
 	"net/http"
 	"net/url"
 	"os"
 	"sync"
+
+	"github.com/rs/zerolog/log"
 )
 
 var (
@@ -15,28 +16,38 @@ var (
 
 func FromEnvironment(req *http.Request) (*url.URL, error) {
 	envProxyOnce.Do(func() {
-		cfg := &Config{
-			HTTPSProxy: getEnvAny("HTTPS_PROXY", "https_proxy"),
-			HTTPProxy:  getEnvAny("HTTP_PROXY", "http_proxy"),
-			AllProxy:   getEnvAny("ALL_PROXY", "all_proxy"),
-		}
-		envProxyFuncValue = cfg.ProxyFunc()
+		cfg := &config{}
+		cfg.init()
+		envProxyFuncValue = cfg.proxyForURL
 	})
 	return envProxyFuncValue(req.URL)
 }
 
-type Config struct {
-	HTTPSProxy string
-	HTTPProxy  string
-	AllProxy   string
+type config struct {
+	proxy *url.URL
 }
 
-type config struct {
-	Config
+func (cfg *config) proxyForURL(*url.URL) (*url.URL, error) {
+	if cfg.proxy != nil {
+		return cfg.proxy, nil
+	}
 
-	httpsProxy *url.URL
-	httpProxy  *url.URL
-	allProxy   *url.URL
+	return nil, nil
+}
+
+func (cfg *config) init() {
+	if parsed := parseProxy(getEnvAny("HTTPS_PROXY", "https_proxy")); parsed != nil {
+		cfg.proxy = parsed
+		return
+	}
+	if parsed := parseProxy(getEnvAny("HTTP_PROXY", "http_proxy")); parsed != nil {
+		cfg.proxy = parsed
+		return
+	}
+	if parsed := parseProxy(getEnvAny("ALL_PROXY", "all_proxy")); parsed != nil {
+		cfg.proxy = parsed
+		return
+	}
 }
 
 func getEnvAny(names ...string) string {
@@ -48,58 +59,16 @@ func getEnvAny(names ...string) string {
 	return ""
 }
 
-func (cfg *Config) ProxyFunc() func(reqURL *url.URL) (*url.URL, error) {
-	// Preprocess the Config settings for more efficient evaluation.
-	cfg1 := &config{
-		Config: *cfg,
-	}
-	cfg1.init()
-	return cfg1.proxyForURL
-}
-
-func (cfg *config) proxyForURL(*url.URL) (*url.URL, error) {
-	var proxy *url.URL
-
-	if cfg.httpsProxy != nil {
-		proxy = cfg.httpsProxy
-	} else if cfg.httpProxy != nil {
-		proxy = cfg.httpProxy
-	} else if cfg.allProxy != nil {
-		proxy = cfg.allProxy
-	}
-
-	if proxy == nil {
-		return nil, nil
-	}
-
-	return proxy, nil
-}
-
-func parseProxy(proxy string) (*url.URL, error) {
+func parseProxy(proxy string) *url.URL {
 	if proxy == "" {
-		return nil, nil
+		return nil
 	}
 
 	proxyURL, err := url.Parse(proxy)
-	if err != nil || proxyURL.Scheme == "" || proxyURL.Host == "" {
-		if proxyURL, err := url.Parse("http://" + proxy); err == nil {
-			return proxyURL, nil
-		}
-	}
 	if err != nil {
-		return nil, fmt.Errorf("invalid proxy address %q: %v", proxy, err)
+		log.Error().Err(err).Str("url", proxy).Msg("failed to parse url")
+		return nil
 	}
-	return proxyURL, nil
-}
 
-func (cfg *config) init() {
-	if parsed, err := parseProxy(cfg.HTTPSProxy); err == nil {
-		cfg.httpsProxy = parsed
-	}
-	if parsed, err := parseProxy(cfg.HTTPProxy); err == nil {
-		cfg.httpProxy = parsed
-	}
-	if parsed, err := parseProxy(cfg.AllProxy); err == nil {
-		cfg.allProxy = parsed
-	}
+	return proxyURL
 }
