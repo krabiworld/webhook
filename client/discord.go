@@ -2,8 +2,8 @@ package client
 
 import (
 	"bytes"
-	"context"
 	"fmt"
+	"net"
 	"net/http"
 	"time"
 	"webhook/structs/discord"
@@ -18,7 +18,11 @@ const baseURL = "https://discord.com/api"
 var client *http.Client
 
 func Init() {
-	dial := proxy.FromEnvironment().(proxy.ContextDialer)
+	dial := proxy.FromEnvironmentUsing(&net.Dialer{
+		Timeout:   30 * time.Second,
+		KeepAlive: 30 * time.Second,
+	}).(proxy.ContextDialer)
+
 	client = &http.Client{
 		Transport: &http.Transport{
 			Proxy:                 http.ProxyFromEnvironment,
@@ -41,10 +45,7 @@ func ExecuteWebhook(eventResult *discord.Webhook, creds discord.Credentials) err
 		return err
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewReader(body))
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(body))
 	if err != nil {
 		return err
 	}
