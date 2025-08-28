@@ -103,4 +103,4 @@ Query parameters:
 
 ## Proxy support
 
-All standard environment variables are supported, such as `HTTP_PROXY`, `HTTPS_PROXY` and `ALL_PROXY`. SOCKS5 only works in `ALL_PROXY`
+All standard environment variables are supported, such as `HTTP_PROXY`, `HTTPS_PROXY` and `ALL_PROXY`.

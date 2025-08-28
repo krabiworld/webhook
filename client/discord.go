@@ -6,11 +6,11 @@ import (
 	"net"
 	"net/http"
 	"time"
+	"webhook/proxy"
 	"webhook/structs/discord"
 
 	"github.com/bytedance/sonic"
 	"github.com/rs/zerolog/log"
-	"golang.org/x/net/proxy"
 )
 
 const baseURL = "https://discord.com/api"
@@ -18,20 +18,20 @@ const baseURL = "https://discord.com/api"
 var client *http.Client
 
 func Init() {
-	dial := proxy.FromEnvironmentUsing(&net.Dialer{
+	dial := &net.Dialer{
 		Timeout:   30 * time.Second,
 		KeepAlive: 30 * time.Second,
-	}).(proxy.ContextDialer)
+	}
 
 	client = &http.Client{
 		Transport: &http.Transport{
-			Proxy:                 http.ProxyFromEnvironment,
+			Proxy:                 proxy.FromEnvironment,
 			DialContext:           dial.DialContext,
 			ForceAttemptHTTP2:     true,
 			MaxIdleConns:          100,
 			IdleConnTimeout:       90 * time.Second,
 			TLSHandshakeTimeout:   10 * time.Second,
-			ExpectContinueTimeout: time.Second,
+			ExpectContinueTimeout: 1 * time.Second,
 		},
 		Timeout: 10 * time.Second,
 	}
