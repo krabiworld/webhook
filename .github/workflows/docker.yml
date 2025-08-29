@@ -6,7 +6,6 @@ on:
       - main
     paths-ignore:
       - '.github/workflows/helm.yml'
-      - '.github/workflows/lint.yml'
       - '.github/workflows/test.yml'
       - '.github/dependabot.yml'
       - 'helm/**'
