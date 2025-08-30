@@ -10,13 +10,13 @@ A beautiful GitHub webhook proxy for Discord
 
 ## Installation
 
-**Docker:**
+### Docker
 
 ```shell
 docker run --name webhook -d -p 8080:8080 krabiworld/webhook
 ```
 
-**Docker Compose:**
+### Docker Compose
 
 ```yaml
 services:
@@ -26,7 +26,7 @@ services:
       - "8080:8080"
 ```
 
-**Kubernetes**
+### Kubernetes
 
 ```shell
 helm repo add webhook https://krabiworld.github.io/webhook
@@ -34,6 +34,28 @@ helm install webhook webhook/webhook
 ```
 
 See [helm/values.yaml](helm/values.yaml)
+
+### Precompiled binaries
+
+You can download precompiled binaries for Linux, macOS and Windows from the [GitHub Releases](https://github.com/krabiworld/webhook/releases) page.
+
+### Building from source
+
+To build Webhook from source you need only Go, version specified in [go.mod](go.mod) or greater
+
+Start by cloning the repository:
+
+```shell
+git clone https://github.com/krabiworld/webhook.git
+cd webhook
+```
+
+Then build the binary (the flags are optional but produce a smaller binary) and run it:
+
+```shell
+go build -ldflags="-s -w" -trimpath
+./webhook
+```
 
 ## Usage
 
