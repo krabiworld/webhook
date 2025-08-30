@@ -50,10 +50,10 @@ git clone https://github.com/krabiworld/webhook.git
 cd webhook
 ```
 
-Then build the binary (the flags are optional but produce a smaller binary) and run it:
+Then build the binary and run it:
 
 ```shell
-go build -ldflags="-s -w" -trimpath
+go build
 ./webhook
 ```
 
