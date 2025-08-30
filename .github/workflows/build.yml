@@ -23,6 +23,13 @@ jobs:
       matrix:
         os: [ linux, darwin, windows ]
         arch: [ amd64, arm64 ]
+        include:
+          - os: linux
+            ext: ""
+          - os: darwin
+            ext: ""
+          - os: windows
+            ext: .exe
 
     permissions:
       contents: read
@@ -38,7 +45,7 @@ jobs:
       - name: Build
         run: |
           mkdir dist
-          GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go build -o dist/webhook-${{ matrix.os }}-${{ matrix.arch }}
+          GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go build -o dist/webhook-${{ matrix.os }}-${{ matrix.arch }}${{ matrix.ext }}
 
       - name: Upload binaries
         uses: actions/upload-artifact@v4
