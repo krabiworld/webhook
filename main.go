@@ -19,7 +19,6 @@ func main() {
 	logger.Init()
 
 	client.Init()
-	log.Info().Msg("Client initialized")
 
 	debouncer.Init()
 

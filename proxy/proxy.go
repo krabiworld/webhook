@@ -4,50 +4,54 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"sync"
 
 	"github.com/rs/zerolog/log"
 )
 
-var (
-	envProxyOnce      sync.Once
-	envProxyFuncValue func(*url.URL) (*url.URL, error)
-)
-
-func FromEnvironment(req *http.Request) (*url.URL, error) {
-	envProxyOnce.Do(func() {
-		cfg := &config{}
-		cfg.init()
-		envProxyFuncValue = cfg.proxyForURL
-	})
-	return envProxyFuncValue(req.URL)
+type Proxy struct {
+	proxyAddr string
+	proxyFunc func(*url.URL) (*url.URL, error)
 }
 
-type config struct {
-	proxy *url.URL
-}
+func New() *Proxy {
+	proxy := parse()
 
-func (cfg *config) proxyForURL(*url.URL) (*url.URL, error) {
-	if cfg.proxy != nil {
-		return cfg.proxy, nil
+	var proxyAddr string
+	var proxyFunc func(*url.URL) (*url.URL, error)
+
+	if proxy != nil {
+		proxyAddr = proxy.String()
+		proxyFunc = func(url *url.URL) (*url.URL, error) {
+			return proxy, nil
+		}
+	} else {
+		proxyFunc = func(url *url.URL) (*url.URL, error) {
+			return nil, nil
+		}
 	}
 
-	return nil, nil
+	return &Proxy{proxyAddr: proxyAddr, proxyFunc: proxyFunc}
 }
 
-func (cfg *config) init() {
+func (p *Proxy) Addr() string {
+	return p.proxyAddr
+}
+
+func (p *Proxy) Func(req *http.Request) (*url.URL, error) {
+	return p.proxyFunc(req.URL)
+}
+
+func parse() *url.URL {
 	if parsed := parseProxy(getEnvAny("HTTPS_PROXY", "https_proxy")); parsed != nil {
-		cfg.proxy = parsed
-		return
+		return parsed
 	}
 	if parsed := parseProxy(getEnvAny("HTTP_PROXY", "http_proxy")); parsed != nil {
-		cfg.proxy = parsed
-		return
+		return parsed
 	}
 	if parsed := parseProxy(getEnvAny("ALL_PROXY", "all_proxy")); parsed != nil {
-		cfg.proxy = parsed
-		return
+		return parsed
 	}
+	return nil
 }
 
 func getEnvAny(names ...string) string {

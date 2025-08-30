@@ -18,6 +18,8 @@ const baseURL = "https://discord.com/api"
 var client *http.Client
 
 func Init() {
+	p := proxy.New()
+
 	dial := &net.Dialer{
 		Timeout:   30 * time.Second,
 		KeepAlive: 30 * time.Second,
@@ -25,7 +27,7 @@ func Init() {
 
 	client = &http.Client{
 		Transport: &http.Transport{
-			Proxy:                 proxy.FromEnvironment,
+			Proxy:                 p.Func,
 			DialContext:           dial.DialContext,
 			ForceAttemptHTTP2:     true,
 			MaxIdleConns:          100,
@@ -35,6 +37,8 @@ func Init() {
 		},
 		Timeout: 10 * time.Second,
 	}
+
+	log.Info().Str("proxy", p.Addr()).Msg("Client initialized")
 }
 
 func ExecuteWebhook(eventResult *discord.Webhook, creds discord.Credentials) error {
@@ -42,19 +46,19 @@ func ExecuteWebhook(eventResult *discord.Webhook, creds discord.Credentials) err
 
 	body, err := sonic.Marshal(eventResult)
 	if err != nil {
-		return err
+		return fmt.Errorf("sonic.Marshal: %w", err)
 	}
 
 	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(body))
 	if err != nil {
-		return err
+		return fmt.Errorf("could not create request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return err
+		return fmt.Errorf("could not send request: %w", err)
 	}
 	defer func() {
 		if err := resp.Body.Close(); err != nil {
@@ -65,7 +69,7 @@ func ExecuteWebhook(eventResult *discord.Webhook, creds discord.Credentials) err
 	if resp.StatusCode != http.StatusNoContent {
 		buf := new(bytes.Buffer)
 		_, _ = buf.ReadFrom(resp.Body)
-		return fmt.Errorf("discord webhook error: %s", buf.String())
+		return fmt.Errorf("discord api error: %s", buf.String())
 	}
 
 	return nil
