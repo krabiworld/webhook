@@ -45,7 +45,10 @@ jobs:
       - name: Build
         run: |
           mkdir dist
-          GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go build -ldflags="-s -w" -trimpath -o dist/webhook-${{ matrix.os }}-${{ matrix.arch }}${{ matrix.ext }}
+          export CGO_ENABLED=0
+          export GOOS=${{ matrix.os }}
+          export GOARCH=${{ matrix.arch }}
+          go build -ldflags="-s -w" -trimpath -o dist/webhook-${{ matrix.os }}-${{ matrix.arch }}${{ matrix.ext }}
 
       - name: Upload binaries
         uses: actions/upload-artifact@v4
