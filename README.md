@@ -96,7 +96,8 @@ All environment variables are optional.
 | `DISABLED_EVENTS`             | Comma-separated list of GitHub events to ignore completely.                                  |               | `release,fork`                                                |
 | `IGNORE_PRIVATE_REPOSITORIES` | Skip events from private repositories.                                                       | `false`       | `true`                                                        |
 | `IGNORED_REPOSITORIES`        | Comma-separated list of repos to ignore.                                                     |               | `torvalds/linux,rust-lang/rust`                               |
-| `IGNORED_WORKFLOWS`           | List of GitHub Actions workflows to ignore globally.                                         |               | `"CodeQL,Automatic Dependency Submission,Dependabot Updates"` |
+| `IGNORED_CHECKS`              | Comma-separated list of checks to ignore.                                                    |               | `Cloudflare,Vercel`                                           |
+| `IGNORED_WORKFLOWS`           | Comma-separated list of workflows to ignore.                                                 |               | `"CodeQL,Automatic Dependency Submission,Dependabot Updates"` |
 
 ## Endpoints
 

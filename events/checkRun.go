@@ -22,7 +22,7 @@ func (e *checkRun) handle(ctx *context.Context) (*discord.Webhook, error) {
 		return nil, nil
 	}
 
-	if slices.Contains(ctx.IgnoredChecks(), e.CheckRun.App.Name) {
+	if slices.Contains(config.Get().IgnoredChecks, e.CheckRun.App.Name) || slices.Contains(ctx.IgnoredChecks(), e.CheckRun.App.Name) {
 		log.Debug().Str("check", e.CheckRun.App.Name).Msg("Ignored check")
 		return nil, nil
 	}

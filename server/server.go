@@ -59,7 +59,7 @@ func Start() {
 			Int("size", size).
 			Int("status", status).
 			Str("url", sanitizePath(r.URL.Path)).
-			Send()
+			Msg("Request")
 	}))
 
 	h := c.Then(mux)
