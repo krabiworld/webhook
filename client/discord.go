@@ -3,10 +3,9 @@ package client
 import (
 	"bytes"
 	"fmt"
-	"net"
 	"net/http"
-	"time"
-	"webhook/proxy"
+	"os"
+	"strings"
 	"webhook/structs/discord"
 
 	"github.com/bytedance/sonic"
@@ -18,27 +17,14 @@ const baseURL = "https://discord.com/api"
 var client *http.Client
 
 func Init() {
-	p := proxy.New()
-
-	dial := &net.Dialer{
-		Timeout:   30 * time.Second,
-		KeepAlive: 30 * time.Second,
+	// Add support for socks5 in http_proxy and alL_proxy
+	if proxy := proxyFromEnv("HTTP_PROXY", "ALL_PROXY"); proxy != "" {
+		_ = os.Setenv("HTTPS_PROXY", proxy)
 	}
 
-	client = &http.Client{
-		Transport: &http.Transport{
-			Proxy:                 p.Func,
-			DialContext:           dial.DialContext,
-			ForceAttemptHTTP2:     true,
-			MaxIdleConns:          100,
-			IdleConnTimeout:       90 * time.Second,
-			TLSHandshakeTimeout:   10 * time.Second,
-			ExpectContinueTimeout: 1 * time.Second,
-		},
-		Timeout: 10 * time.Second,
-	}
+	client = &http.Client{}
 
-	log.Info().Str("proxy", p.Addr()).Msg("Client initialized")
+	log.Info().Msg("Client initialized")
 }
 
 func ExecuteWebhook(eventResult *discord.Webhook, creds discord.Credentials) error {
@@ -73,4 +59,20 @@ func ExecuteWebhook(eventResult *discord.Webhook, creds discord.Credentials) err
 	}
 
 	return nil
+}
+
+func getenvInsensitive(key string) string {
+	if v := os.Getenv(key); v != "" {
+		return v
+	}
+	return os.Getenv(strings.ToLower(key))
+}
+
+func proxyFromEnv(keys ...string) string {
+	for _, key := range keys {
+		if val := getenvInsensitive(key); strings.HasPrefix(val, "socks5://") {
+			return val
+		}
+	}
+	return ""
 }

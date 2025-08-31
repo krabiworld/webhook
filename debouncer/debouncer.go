@@ -16,7 +16,9 @@ type Debouncer struct {
 var debouncer *Debouncer
 
 func Init() {
-	switch config.Get().StorageBackend {
+	backend := config.Get().StorageBackend
+
+	switch backend {
 	case "memory":
 		debouncer = &Debouncer{cache.NewMemory[bool]()}
 	case "redis":
@@ -26,7 +28,11 @@ func Init() {
 		}
 
 		debouncer = &Debouncer{c}
+	default:
+		log.Fatal().Msg("Unsupported storage backend")
 	}
+
+	log.Info().Str("backend", backend).Msg("Debouncer initialized")
 }
 
 func Debounce(event, username, repository string, ttl time.Duration) bool {

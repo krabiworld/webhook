@@ -26,6 +26,8 @@ func Init() {
 
 	if logMode == "pretty" {
 		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout})
+	} else if logMode != "json" {
+		log.Fatal().Str("logMode", logMode).Msg("Unsupported log mode")
 	}
 
 	// Set log level
@@ -38,5 +40,5 @@ func Init() {
 
 	zerolog.SetGlobalLevel(zeroLogLevel)
 
-	log.Info().Str("logLevel", logLevel).Msg("Logger successfully initialized")
+	log.Info().Str("logLevel", logLevel).Str("logMode", logMode).Msg("Logger initialized")
 }

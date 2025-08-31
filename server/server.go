@@ -6,7 +6,10 @@ import (
 	"time"
 	"webhook/config"
 
+	"github.com/justinas/alice"
+	"github.com/rs/zerolog/hlog"
 	"github.com/rs/zerolog/log"
+	"github.com/tomasen/realip"
 )
 
 var routes = map[string]string{
@@ -38,22 +41,30 @@ func sanitizePath(path string) string {
 	return path
 }
 
-func loggingMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		start := time.Now()
-
-		next.ServeHTTP(w, r)
-
-		log.Debug().Str("addr", r.RemoteAddr).Str("method", r.Method).Str("path", sanitizePath(r.URL.Path)).Dur("ts", time.Since(start)).Send()
-	})
-}
-
 func Start() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", health)
 	mux.HandleFunc("/", webhook)
 
-	err := http.ListenAndServe(config.Get().Address, loggingMiddleware(mux))
+	c := alice.New()
+
+	c = c.Append(hlog.NewHandler(log.Logger))
+	c = c.Append(hlog.MethodHandler("method"))
+	c = c.Append(hlog.UserAgentHandler("user_agent"))
+	c = c.Append(hlog.RefererHandler("referer"))
+	c = c.Append(hlog.AccessHandler(func(r *http.Request, status, size int, duration time.Duration) {
+		hlog.FromRequest(r).Info().
+			Str("ip", realip.FromRequest(r)).
+			Dur("duration", duration).
+			Int("size", size).
+			Int("status", status).
+			Str("url", sanitizePath(r.URL.Path)).
+			Send()
+	}))
+
+	h := c.Then(mux)
+
+	err := http.ListenAndServe(config.Get().Address, h)
 	if err != nil {
 		log.Fatal().Err(err).Send()
 	}
