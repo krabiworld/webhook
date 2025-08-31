@@ -81,8 +81,7 @@ jobs:
           name: webhook-linux-arm64
 
       - name: Fix permissions
-        run: |
-          chmod +x ./webhook-linux-amd64 ./webhook-linux-arm64
+        run: chmod +x ./webhook-linux-amd64 ./webhook-linux-arm64
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392 # v3.6.0
@@ -136,7 +135,7 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Generate artifact attestation
-        uses: actions/attest-build-provenance@v2
+        uses: actions/attest-build-provenance@v3
         with:
           subject-name: ghcr.io/${{ github.repository }}
           subject-digest: ${{ steps.push.outputs.digest }}
@@ -171,7 +170,7 @@ jobs:
           path: dist
 
       - name: Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@72f2c25fcb47643c292f7107632f7a47c1df5cd8 # v2.3.2
         with:
           files: dist/**
           name: ${{ steps.bump_tag.outputs.new_tag }}
