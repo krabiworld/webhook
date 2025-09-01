@@ -4,11 +4,11 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"webhook/client"
-	"webhook/config"
-	"webhook/debouncer"
-	"webhook/logger"
-	"webhook/server"
+	"webhook/internal/client"
+	"webhook/internal/config"
+	"webhook/internal/debouncer"
+	"webhook/internal/logger"
+	"webhook/internal/server"
 
 	"github.com/rs/zerolog/log"
 )

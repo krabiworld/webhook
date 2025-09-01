@@ -3,11 +3,11 @@ package events
 import (
 	"fmt"
 	"slices"
-	"webhook/client"
-	"webhook/config"
-	"webhook/context"
-	"webhook/structs/discord"
-	"webhook/structs/github"
+	"webhook/internal/client"
+	"webhook/internal/config"
+	"webhook/internal/context"
+	"webhook/internal/structs/discord"
+	"webhook/internal/structs/github"
 
 	"github.com/bytedance/sonic"
 	"github.com/rs/zerolog/log"

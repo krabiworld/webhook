@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"time"
-	"webhook/codec"
+	"webhook/internal/codec"
 
 	"github.com/redis/go-redis/v9"
 	"github.com/rs/zerolog/log"

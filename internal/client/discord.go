@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"webhook/structs/discord"
+	"webhook/internal/structs/discord"
 
 	"github.com/bytedance/sonic"
 	"github.com/rs/zerolog/log"

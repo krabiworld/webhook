@@ -8,10 +8,10 @@ import (
 	"mime"
 	"net/http"
 	"strings"
-	"webhook/config"
-	"webhook/context"
-	"webhook/events"
-	"webhook/structs/discord"
+	"webhook/internal/config"
+	"webhook/internal/context"
+	"webhook/internal/events"
+	"webhook/internal/structs/discord"
 
 	"github.com/rs/zerolog/log"
 )

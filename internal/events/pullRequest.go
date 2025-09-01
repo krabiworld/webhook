@@ -3,9 +3,9 @@ package events
 import (
 	"fmt"
 	"strings"
-	"webhook/context"
-	"webhook/structs/discord"
-	"webhook/structs/github"
+	"webhook/internal/context"
+	"webhook/internal/structs/discord"
+	"webhook/internal/structs/github"
 )
 
 type pullRequest struct {

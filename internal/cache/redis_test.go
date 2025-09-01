@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 	"time"
-	"webhook/codec"
+	"webhook/internal/codec"
 
 	"github.com/alicebob/miniredis/v2"
 )

@@ -4,18 +4,14 @@ on:
   push:
     branches:
       - main
-    paths-ignore: &common_ignores
-      - '.github/workflows/build.yml'
-      - '.github/workflows/helm.yml'
-      - '.github/dependabot.yml'
-      - 'helm/**'
-      - '.env.example'
-      - '.gitattributes'
-      - '.gitignore'
-      - 'LICENSE'
-      - 'README.md'
+    paths: &common_paths
+      - '.github/workflows/test.yml'
+      - 'cmd'
+      - 'internal'
+      - 'go.mod'
+      - 'go.sum'
   pull_request:
-    paths-ignore: *common_ignores
+    paths: *common_paths
 
 permissions:
   contents: read

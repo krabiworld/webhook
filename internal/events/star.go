@@ -3,11 +3,11 @@ package events
 import (
 	"fmt"
 	"time"
-	"webhook/config"
-	"webhook/context"
-	"webhook/debouncer"
-	"webhook/structs/discord"
-	"webhook/structs/github"
+	"webhook/internal/config"
+	"webhook/internal/context"
+	"webhook/internal/debouncer"
+	"webhook/internal/structs/discord"
+	"webhook/internal/structs/github"
 
 	"github.com/rs/zerolog/log"
 )

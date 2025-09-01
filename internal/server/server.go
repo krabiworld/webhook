@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strings"
 	"time"
-	"webhook/config"
+	"webhook/internal/config"
 
 	"github.com/justinas/alice"
 	"github.com/rs/zerolog/hlog"

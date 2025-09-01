@@ -2,9 +2,9 @@ package debouncer
 
 import (
 	"time"
-	"webhook/cache"
-	"webhook/codec"
-	"webhook/config"
+	"webhook/internal/cache"
+	"webhook/internal/codec"
+	"webhook/internal/config"
 
 	"github.com/rs/zerolog/log"
 )

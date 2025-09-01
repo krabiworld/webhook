@@ -53,7 +53,7 @@ cd webhook
 Then build the binary and run it:
 
 ```shell
-go build
+go build ./cmd/webhook
 ./webhook
 ```
 

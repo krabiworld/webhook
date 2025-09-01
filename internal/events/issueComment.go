@@ -2,22 +2,23 @@ package events
 
 import (
 	"fmt"
-	"webhook/context"
-	"webhook/structs/discord"
-	"webhook/structs/github"
+	"webhook/internal/context"
+	"webhook/internal/structs/discord"
+	"webhook/internal/structs/github"
 )
 
-type issues struct {
+type issueComment struct {
 	Action     string            `json:"action"`
+	Comment    github.Comment    `json:"comment"`
 	Issue      github.Issue      `json:"issue"`
 	Repository github.Repository `json:"repository"`
 	Sender     github.User       `json:"sender"`
 }
 
-func (e *issues) handle(*context.Context) (*discord.Webhook, error) {
+func (e *issueComment) handle(*context.Context) (*discord.Webhook, error) {
 	return &discord.Webhook{
 		Content: fmt.Sprintf(
-			"[%s](<%s>) %s issue [%s](<%s>) in [%s](<%s>)/[%s](<%s>)",
+			"[%s](<%s>) %s comment on issue [%s](<%s>) in [%s](<%s>)/[%s](<%s>)",
 			e.Sender.Login,
 			e.Sender.HtmlUrl,
 			e.Action,

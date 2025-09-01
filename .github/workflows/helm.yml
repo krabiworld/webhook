@@ -1,4 +1,4 @@
-name: Publish Helm chart
+name: Package and publish chart
 
 on:
   push:
@@ -7,9 +7,6 @@ on:
     paths:
       - '.github/workflows/helm.yml'
       - 'helm/**'
-
-env:
-  REGISTRY: ghcr.io
 
 jobs:
   publish-helm:
@@ -26,10 +23,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      - name: Log in to the Container registry
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@184bdaa0721073962dff0199f1fb9940f07167d1 # v3.5.0
         with:
-          registry: ${{ env.REGISTRY }}
+          registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -38,7 +35,7 @@ jobs:
 
       - name: Push chart
         working-directory: dist
-        run: helm push webhook-*.tgz oci://${{ env.REGISTRY }}/${{ github.actor }}
+        run: helm push webhook-*.tgz oci://ghcr.io/${{ github.actor }}
 
       - name: Create repository index
         working-directory: dist

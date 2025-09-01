@@ -4,7 +4,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
-	"webhook/config"
+	"webhook/internal/config"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
