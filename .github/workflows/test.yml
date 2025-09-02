@@ -38,4 +38,4 @@ jobs:
           only-new-issues: true
 
       - name: Test
-        run: go test ./... -v -race
+        run: go test ./... -v -race -cover -count=1
