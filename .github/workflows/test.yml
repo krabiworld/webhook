@@ -6,8 +6,7 @@ on:
       - main
     paths: &common_paths
       - '.github/workflows/test.yml'
-      - 'cmd'
-      - 'internal'
+      - '**.go'
       - 'go.mod'
       - 'go.sum'
   pull_request:
