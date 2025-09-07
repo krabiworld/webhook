@@ -24,7 +24,10 @@ func Init() {
 		log.Panic().Err(err).Msg("Failed to open dialector")
 	}
 
-	db, err = gorm.Open(dialector, &gorm.Config{Logger: logger.Default.LogMode(logger.Silent)})
+	db, err = gorm.Open(dialector, &gorm.Config{
+		PrepareStmt: true,
+		Logger:      logger.Default.LogMode(logger.Silent),
+	})
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to connect db")
 	}
