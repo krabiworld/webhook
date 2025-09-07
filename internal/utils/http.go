@@ -22,6 +22,10 @@ func BindJSON(r *http.Request, v any) error {
 	return sonic.ConfigDefault.NewDecoder(r.Body).Decode(v)
 }
 
+func Write(w http.ResponseWriter, status int) {
+	w.WriteHeader(status)
+}
+
 func WriteJSON(w http.ResponseWriter, status int, v any) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(status)

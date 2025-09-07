@@ -52,10 +52,10 @@ func Start() {
 
 	// Webhooks
 	mux.HandleFunc("POST /api/webhooks", api.CreateWebhook)
-	//mux.HandleFunc("GET /api/webhooks", api.GetWebhooks)
-	//mux.HandleFunc("GET /api/webhooks/{id}", api.GetWebhook)
+	mux.HandleFunc("GET /api/webhooks", api.GetWebhooks)
+	mux.HandleFunc("GET /api/webhooks/{id}", api.GetWebhook)
 	//mux.HandleFunc("PUT /api/webhooks/{id}", api.PutWebhook)
-	//mux.HandleFunc("DELETE /api/webhooks/{id}", api.DeleteWebhook)
+	mux.HandleFunc("DELETE /api/webhooks/{id}", api.DeleteWebhook)
 
 	c := alice.New()
 
