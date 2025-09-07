@@ -56,6 +56,7 @@ func Start() {
 	mux.HandleFunc("GET /api/webhooks/{id}", api.GetWebhook)
 	mux.HandleFunc("PUT /api/webhooks/{id}", api.UpdateWebhook)
 	mux.HandleFunc("DELETE /api/webhooks/{id}", api.DeleteWebhook)
+	mux.HandleFunc("POST /api/webhooks/{id}/rotate", api.RotateToken)
 
 	c := alice.New()
 

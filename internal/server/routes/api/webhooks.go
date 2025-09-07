@@ -56,7 +56,7 @@ func GetWebhooks(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetWebhook(w http.ResponseWriter, r *http.Request) {
-	webhookModel, err := db.G[models.Webhook]().Where("id = ?", r.PathValue("id")).Find(r.Context())
+	webhookModel, err := db.G[models.Webhook]().Where("id = ?", r.PathValue("id")).First(r.Context())
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		utils.WriteError(w, http.StatusNotFound, "Webhook not found")
 		return
@@ -109,4 +109,32 @@ func DeleteWebhook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.Write(w, http.StatusNoContent)
+}
+
+func RotateToken(w http.ResponseWriter, r *http.Request) {
+	updatedWebhook := models.Webhook{
+		Token: utils.UUID(),
+	}
+
+	rowsAffected, err := db.G[models.Webhook]().Where("id = ?", r.PathValue("id")).Updates(r.Context(), updatedWebhook)
+	if rowsAffected == 0 {
+		utils.WriteError(w, http.StatusNotFound, "Webhook not found")
+		return
+	} else if err != nil {
+		log.Error().Err(err).Msg("Error deleting webhook")
+		utils.WriteError(w, http.StatusInternalServerError, "Error deleting webhook")
+		return
+	}
+
+	webhookModel, err := db.G[models.Webhook]().Where("id = ?", r.PathValue("id")).First(r.Context())
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		utils.WriteError(w, http.StatusNotFound, "Webhook not found")
+		return
+	} else if err != nil {
+		log.Error().Err(err).Msg("Error getting webhook")
+		utils.WriteError(w, http.StatusInternalServerError, "Error getting webhook")
+		return
+	}
+
+	utils.WriteJSON(w, http.StatusOK, webhookModel)
 }
