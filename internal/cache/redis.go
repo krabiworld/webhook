@@ -87,9 +87,9 @@ func (r *Redis[T]) Exists(key string) (bool, error) {
 func (r *Redis[T]) Flush() error {
 	err := r.client.FlushDB(r.ctx).Err()
 	if err != nil {
-		return fmt.Errorf("failed to flush Redis database: %w", err)
+		return fmt.Errorf("failed to flush Redis: %w", err)
 	}
 
-	log.Info().Msg("Redis database flushed")
+	log.Info().Msg("Redis flushed")
 	return nil
 }

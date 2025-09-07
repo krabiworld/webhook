@@ -5,6 +5,9 @@ import (
 	"strings"
 	"time"
 	"webhook/internal/config"
+	"webhook/internal/middlewares"
+	"webhook/internal/server/routes"
+	"webhook/internal/server/routes/api"
 
 	"github.com/justinas/alice"
 	"github.com/rs/zerolog/hlog"
@@ -12,17 +15,17 @@ import (
 	"github.com/tomasen/realip"
 )
 
-var routes = map[string]string{
+var r = map[string]string{
 	"/health": "/health",
 	"/":       "/:id/:token",
 }
 
 func sanitizePath(path string) string {
-	if v, ok := routes[path]; ok {
+	if v, ok := r[path]; ok {
 		return v
 	}
 
-	for prefix, pattern := range routes {
+	for prefix, pattern := range r {
 		if prefix == "/" {
 			continue
 		}
@@ -31,7 +34,7 @@ func sanitizePath(path string) string {
 		}
 	}
 
-	if pattern, ok := routes["/"]; ok {
+	if pattern, ok := r["/"]; ok {
 		parts := strings.Split(strings.Trim(path, "/"), "/")
 		if len(parts) == 2 {
 			return pattern
@@ -43,8 +46,16 @@ func sanitizePath(path string) string {
 
 func Start() {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/health", health)
-	mux.HandleFunc("/", webhook)
+	mux.HandleFunc("GET /health", routes.Health)
+	mux.HandleFunc("POST /{id}/{token}", routes.Webhook)
+	//mux.HandleFunc("POST /webhook/{id}", routes.WebhookNew)
+
+	// Webhooks
+	mux.HandleFunc("POST /api/webhooks", api.CreateWebhook)
+	//mux.HandleFunc("GET /api/webhooks", api.GetWebhooks)
+	//mux.HandleFunc("GET /api/webhooks/{id}", api.GetWebhook)
+	//mux.HandleFunc("PUT /api/webhooks/{id}", api.PutWebhook)
+	//mux.HandleFunc("DELETE /api/webhooks/{id}", api.DeleteWebhook)
 
 	c := alice.New()
 
@@ -61,6 +72,8 @@ func Start() {
 			Str("url", sanitizePath(r.URL.Path)).
 			Msg("Request")
 	}))
+
+	c = c.Append(middlewares.Authentication)
 
 	h := c.Then(mux)
 

@@ -88,22 +88,24 @@ go build ./cmd/webhook
 
 All environment variables are optional.
 
-| Variable                      | Description                                                                                  | Default value | Example                                                       |
-|-------------------------------|----------------------------------------------------------------------------------------------|---------------|---------------------------------------------------------------|
-| `LOG_LEVEL`                   | How much detail to log. Options: `trace`, `debug`, `info`, `warn`, `error`, `fatal`, `panic` | `info`        | `debug`                                                       |
-| `LOG_MODE`                    | Log output format: machine-friendly `json` or human-friendly `pretty`.                       | `json`        | `pretty`                                                      |
-| `ADDR`                        | Address and port the server listens on.                                                      | `:8080`       | `127.0.0.1:9000`                                              |
-| `SECRET`                      | Shared secret to validate GitHub signatures. Leave empty to disable checks.                  |               | `random-string`                                               |
-| `STORAGE_BACKEND`             | Where to keep temporary cache. Options: `memory` (in-RAM) or `redis`.                        | `memory`      | `redis`                                                       |
-| `REDIS_URL`                   | Redis connection string (used if `STORAGE_BACKEND=redis`).                                   |               | `redis://<user>:<pass>@localhost:6379/<db>`                   |
-| `HAPPY_EMOJI`                 | Emoji displayed when someone stars the repository.                                           |               | 🔥 or `<:foxtada:1399709119304306746>`                        |
-| `SUCCESS_EMOJI`               | Emoji displayed for successful workflows or checks.                                          |               | ✨ or `<:catgood:1399709119304306747>`                         |
-| `FAILURE_EMOJI`               | Emoji displayed for failed workflows or checks.                                              |               | 😭 or `<:catscream:1399709119304306748>`                      |
-| `DISABLED_EVENTS`             | Comma-separated list of GitHub events to ignore completely.                                  |               | `release,fork`                                                |
-| `IGNORE_PRIVATE_REPOSITORIES` | Skip events from private repositories.                                                       | `false`       | `true`                                                        |
-| `IGNORED_REPOSITORIES`        | Comma-separated list of repos to ignore.                                                     |               | `torvalds/linux,rust-lang/rust`                               |
-| `IGNORED_CHECKS`              | Comma-separated list of checks to ignore.                                                    |               | `Cloudflare,Vercel`                                           |
-| `IGNORED_WORKFLOWS`           | Comma-separated list of workflows to ignore.                                                 |               | `"CodeQL,Automatic Dependency Submission,Dependabot Updates"` |
+| Variable                      | Description                                                                                                      | Default value | Example                                                       |
+|-------------------------------|------------------------------------------------------------------------------------------------------------------|---------------|---------------------------------------------------------------|
+| `LOG_LEVEL`                   | How much detail to log. Options: `trace`, `debug`, `info`, `warn`, `error`, `fatal`, `panic`.                    | `info`        | `debug`                                                       |
+| `LOG_MODE`                    | Log output format: machine-friendly `json` or human-friendly `pretty`.                                           | `json`        | `pretty`                                                      |
+| `ADDR`                        | Address and port the server listens on.                                                                          | `:8080`       | `127.0.0.1:9000`                                              |
+| `SECRET`                      | Shared secret to validate GitHub signatures. Leave empty to disable checks.                                      |               | `random-string`                                               |
+| `DATABASE_TYPE`               | Database type. Options: `sqlite`, `postgres`.                                                                    | `sqlite`      | `postgres`                                                    |
+| `DATABASE_URL`                | Database Data Source Name (DSN). Read more in [gorm docs](https://gorm.io/docs/connecting_to_the_database.html). |               | SQLite path to database file: `webhook.db`                    |
+| `STORAGE_BACKEND`             | Where to keep temporary cache. Options: `memory` (in-RAM) or `redis`.                                            | `memory`      | `redis`                                                       |
+| `REDIS_URL`                   | Redis connection string (used if `STORAGE_BACKEND=redis`).                                                       |               | `redis://<user>:<pass>@localhost:6379/<db>`                   |
+| `HAPPY_EMOJI`                 | Emoji displayed when someone stars the repository.                                                               |               | 🔥 or `<:foxtada:1399709119304306746>`                        |
+| `SUCCESS_EMOJI`               | Emoji displayed for successful workflows or checks.                                                              |               | ✨ or `<:catgood:1399709119304306747>`                         |
+| `FAILURE_EMOJI`               | Emoji displayed for failed workflows or checks.                                                                  |               | 😭 or `<:catscream:1399709119304306748>`                      |
+| `DISABLED_EVENTS`             | Comma-separated list of GitHub events to ignore completely.                                                      |               | `release,fork`                                                |
+| `IGNORE_PRIVATE_REPOSITORIES` | Skip events from private repositories.                                                                           | `false`       | `true`                                                        |
+| `IGNORED_REPOSITORIES`        | Comma-separated list of repos to ignore.                                                                         |               | `torvalds/linux,rust-lang/rust`                               |
+| `IGNORED_CHECKS`              | Comma-separated list of checks to ignore.                                                                        |               | `Cloudflare,Vercel`                                           |
+| `IGNORED_WORKFLOWS`           | Comma-separated list of workflows to ignore.                                                                     |               | `"CodeQL,Automatic Dependency Submission,Dependabot Updates"` |
 
 ## Endpoints
 

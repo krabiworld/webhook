@@ -1,4 +1,4 @@
-package server
+package routes
 
 import (
 	"crypto/hmac"
@@ -23,13 +23,7 @@ const (
 	githubUserAgentPrefix = "GitHub-Hookshot/"
 )
 
-func webhook(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		w.Header().Set("Allow", http.MethodPost)
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		return
-	}
-
+func Webhook(w http.ResponseWriter, r *http.Request) {
 	mediaType, _, err := mime.ParseMediaType(r.Header.Get("Content-Type"))
 	if err != nil || mediaType != "application/json" {
 		log.Error().Err(err).Msg("Invalid media type")
@@ -100,5 +94,5 @@ func webhook(w http.ResponseWriter, r *http.Request) {
 	ctx := context.NewContext(r.URL.Query())
 
 	w.WriteHeader(http.StatusNoContent)
-	go events.Parse(eventHeader, body, ctx, discord.Credentials{ID: parts[0], Token: parts[1]})
+	go events.Parse(eventHeader, body, ctx, discord.Credentials{ID: r.PathValue("id"), Token: r.PathValue("token")})
 }

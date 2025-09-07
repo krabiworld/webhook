@@ -6,6 +6,7 @@ import (
 	"syscall"
 	"webhook/internal/client"
 	"webhook/internal/config"
+	"webhook/internal/db"
 	"webhook/internal/debouncer"
 	"webhook/internal/logger"
 	"webhook/internal/server"
@@ -21,6 +22,8 @@ func main() {
 	client.Init()
 
 	debouncer.Init()
+
+	db.Init()
 
 	go server.Start()
 	log.Info().Str("addr", config.Get().Address).Msg("Server started")

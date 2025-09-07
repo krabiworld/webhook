@@ -372,7 +372,7 @@ func TestRedis_Flush_Error(t *testing.T) {
 		t.Fatal("expected error when Redis is closed, got nil")
 	}
 	// The exact error might vary, so just check it contains the right parts
-	if !strings.Contains(err.Error(), "failed to flush Redis database") {
+	if !strings.Contains(err.Error(), "failed to flush Redis") {
 		t.Errorf("unexpected error message: %v", err)
 	}
 }
