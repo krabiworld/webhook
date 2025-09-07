@@ -3,6 +3,7 @@ package utils
 import (
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/bytedance/sonic"
@@ -36,6 +37,16 @@ func WriteJSON(w http.ResponseWriter, status int, v any) {
 
 func WriteError(w http.ResponseWriter, status int, msg string) {
 	WriteJSON(w, status, ErrorResponse{Errors: []string{msg}})
+}
+
+func CloseBody(body io.ReadCloser) {
+	if body == nil {
+		return
+	}
+
+	if err := body.Close(); err != nil {
+		log.Error().Err(err).Msg("Error closing body")
+	}
 }
 
 func Validate(v any) *ErrorResponse {

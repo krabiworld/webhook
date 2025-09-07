@@ -2,7 +2,6 @@ package api
 
 import (
 	"errors"
-	"io"
 	"net/http"
 	"webhook/internal/db"
 	"webhook/internal/dtos"
@@ -14,12 +13,7 @@ import (
 )
 
 func CreateWebhook(w http.ResponseWriter, r *http.Request) {
-	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-			log.Error().Err(err).Msg("Error closing body")
-		}
-	}(r.Body)
+	defer utils.CloseBody(r.Body)
 
 	var webhookDto dtos.Webhook
 	if err := utils.BindJSON(r, &webhookDto); err != nil {
@@ -74,8 +68,31 @@ func GetWebhook(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSON(w, http.StatusOK, webhookModel)
 }
 
-func PutWebhook(w http.ResponseWriter, r *http.Request) {
+func UpdateWebhook(w http.ResponseWriter, r *http.Request) {
+	defer utils.CloseBody(r.Body)
 
+	var webhookDto dtos.Webhook
+	if err := utils.BindJSON(r, &webhookDto); err != nil {
+		log.Error().Err(err).Msg("Error decoding json")
+		utils.WriteError(w, http.StatusBadRequest, "Error decoding json: "+err.Error())
+		return
+	}
+
+	updatedWebhook := models.Webhook{
+		Name: webhookDto.Name,
+	}
+
+	rowsAffected, err := db.G[models.Webhook]().Where("id = ?", r.PathValue("id")).Updates(r.Context(), updatedWebhook)
+	if rowsAffected == 0 {
+		utils.WriteError(w, http.StatusNotFound, "Webhook not found")
+		return
+	} else if err != nil {
+		log.Error().Err(err).Msg("Error deleting webhook")
+		utils.WriteError(w, http.StatusInternalServerError, "Error deleting webhook")
+		return
+	}
+
+	utils.Write(w, http.StatusNoContent)
 }
 
 func DeleteWebhook(w http.ResponseWriter, r *http.Request) {
