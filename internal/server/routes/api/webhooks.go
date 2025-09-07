@@ -28,9 +28,10 @@ func CreateWebhook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	webhookModel := models.Webhook{
-		ID:    utils.UUID(),
-		Name:  webhookDto.Name,
-		Token: utils.UUID(),
+		ID:     utils.UUID(),
+		Name:   webhookDto.Name,
+		Token:  utils.UUID(),
+		Secret: webhookDto.Secret,
 	}
 
 	err := db.G[models.Webhook]().Create(r.Context(), &webhookModel)
@@ -79,7 +80,8 @@ func UpdateWebhook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	updatedWebhook := models.Webhook{
-		Name: webhookDto.Name,
+		Name:   webhookDto.Name,
+		Secret: webhookDto.Secret,
 	}
 
 	rowsAffected, err := db.G[models.Webhook]().Where("id = ?", r.PathValue("id")).Updates(r.Context(), updatedWebhook)

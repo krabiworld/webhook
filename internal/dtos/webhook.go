@@ -1,5 +1,6 @@
 package dtos
 
 type Webhook struct {
-	Name string `json:"name" validate:"required"`
+	Name   string `json:"name" validate:"required"`
+	Secret string `json:"secret"`
 }
