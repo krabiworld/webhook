@@ -2,14 +2,18 @@ package events
 
 import (
 	"fmt"
+	"log/slog"
 	"slices"
 	"webhook/internal/config"
-	"webhook/internal/context"
 	"webhook/internal/structs/discord"
 	"webhook/internal/structs/github"
-
-	"github.com/rs/zerolog/log"
 )
+
+var ignoredWorkflows = []string{
+	"CodeQL",
+	"Dependabot Updates",
+	"Automatic Dependency Submission",
+}
 
 type workflowRun struct {
 	Action      string             `json:"action"`
@@ -18,13 +22,13 @@ type workflowRun struct {
 	Repository  github.Repository  `json:"repository"`
 }
 
-func (e *workflowRun) handle(ctx *context.Context) (*discord.Webhook, error) {
+func (e *workflowRun) handle() (*discord.Webhook, error) {
 	if e.Action != "completed" || e.WorkflowRun.Conclusion == "" {
 		return nil, nil
 	}
 
-	if slices.Contains(config.Get().IgnoredWorkflows, e.Workflow.Name) || slices.Contains(ctx.IgnoredWorkflows(), e.Workflow.Name) {
-		log.Debug().Str("workflow", e.Workflow.Name).Msg("Ignored workflow")
+	if slices.Contains(ignoredWorkflows, e.Workflow.Name) {
+		slog.Debug("Ignoring workflow", "workflow", e.Workflow.Name)
 		return nil, nil
 	}
 

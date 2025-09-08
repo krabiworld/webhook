@@ -5,15 +5,13 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"io"
+	"log/slog"
 	"mime"
 	"net/http"
 	"strings"
 	"webhook/internal/config"
-	"webhook/internal/context"
 	"webhook/internal/events"
 	"webhook/internal/structs/discord"
-
-	"github.com/rs/zerolog/log"
 )
 
 const (
@@ -26,7 +24,6 @@ const (
 func Webhook(w http.ResponseWriter, r *http.Request) {
 	mediaType, _, err := mime.ParseMediaType(r.Header.Get("Content-Type"))
 	if err != nil || mediaType != "application/json" {
-		log.Error().Err(err).Msg("Invalid media type")
 		w.Header().Set("Accept-Post", "application/json")
 		w.WriteHeader(http.StatusUnsupportedMediaType)
 		return
@@ -52,13 +49,13 @@ func Webhook(w http.ResponseWriter, r *http.Request) {
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		log.Error().Err(err).Msg("Failed to read body")
+		slog.Error("Failed to read body", "err", err.Error())
 		http.Error(w, "Failed to read body", http.StatusInternalServerError)
 		return
 	}
 	defer func() {
 		if err := r.Body.Close(); err != nil {
-			log.Error().Err(err).Msg("Failed to close body")
+			slog.Error("Failed to close body", "err", err.Error())
 		}
 	}()
 
@@ -80,7 +77,7 @@ func Webhook(w http.ResponseWriter, r *http.Request) {
 
 		receivedSig, err := hex.DecodeString(sig[len(githubSignaturePrefix):])
 		if err != nil {
-			log.Error().Err(err).Msg("Failed to decode signature")
+			slog.Error("Failed to decode signature", "err", err.Error())
 			http.Error(w, "Invalid signature hex", http.StatusBadRequest)
 			return
 		}
@@ -91,8 +88,6 @@ func Webhook(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	ctx := context.NewContext(r.URL.Query())
-
 	w.WriteHeader(http.StatusNoContent)
-	go events.Parse(eventHeader, body, ctx, discord.Credentials{ID: r.PathValue("id"), Token: r.PathValue("token")})
+	go events.Parse(eventHeader, body, discord.Credentials{ID: r.PathValue("id"), Token: r.PathValue("token")})
 }

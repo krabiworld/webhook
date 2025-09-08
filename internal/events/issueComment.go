@@ -2,7 +2,6 @@ package events
 
 import (
 	"fmt"
-	"webhook/internal/context"
 	"webhook/internal/structs/discord"
 	"webhook/internal/structs/github"
 )
@@ -15,7 +14,7 @@ type issueComment struct {
 	Sender     github.User       `json:"sender"`
 }
 
-func (e *issueComment) handle(*context.Context) (*discord.Webhook, error) {
+func (e *issueComment) handle() (*discord.Webhook, error) {
 	return &discord.Webhook{
 		Content: fmt.Sprintf(
 			"[%s](<%s>) %s comment on issue [%s](<%s>) in [%s](<%s>)/[%s](<%s>)",

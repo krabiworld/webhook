@@ -6,22 +6,12 @@ import (
 )
 
 type Config struct {
-	LogLevel                  string   `env:"LOG_LEVEL" envDefault:"info"`
-	LogMode                   string   `env:"LOG_MODE" envDefault:"json"`
-	Address                   string   `env:"ADDR" envDefault:":8080"`
-	Secret                    string   `env:"SECRET"`
-	DatabaseType              string   `env:"DATABASE_TYPE" envDefault:"sqlite"`
-	DatabaseUrl               string   `env:"DATABASE_URL"`
-	StorageBackend            string   `env:"STORAGE_BACKEND" envDefault:"memory"`
-	RedisUrl                  string   `env:"REDIS_URL"`
-	HappyEmoji                string   `env:"HAPPY_EMOJI"`
-	SuccessEmoji              string   `env:"SUCCESS_EMOJI"`
-	FailureEmoji              string   `env:"FAILURE_EMOJI"`
-	DisabledEvents            []string `env:"DISABLED_EVENTS"`
-	IgnorePrivateRepositories bool     `env:"IGNORE_PRIVATE_REPOSITORIES" envDefault:"false"`
-	IgnoredRepositories       []string `env:"IGNORED_REPOSITORIES"`
-	IgnoredChecks             []string `env:"IGNORED_CHECKS"`
-	IgnoredWorkflows          []string `env:"IGNORED_WORKFLOWS"`
+	LogLevel     string `env:"LOG_LEVEL" envDefault:"info"`
+	Address      string `env:"ADDR" envDefault:":8080"`
+	Secret       string `env:"SECRET"`
+	HappyEmoji   string `env:"HAPPY_EMOJI"`
+	SuccessEmoji string `env:"SUCCESS_EMOJI"`
+	FailureEmoji string `env:"FAILURE_EMOJI"`
 }
 
 var cfg *Config

@@ -1,10 +1,9 @@
 package cache
 
 import (
+	"log/slog"
 	"sync"
 	"time"
-
-	"github.com/rs/zerolog/log"
 )
 
 type Memory[T any] struct {
@@ -24,21 +23,15 @@ func (m *Memory[T]) Set(key string, value T, ttl time.Duration) error {
 	if ttl > 0 {
 		time.AfterFunc(ttl, func() {
 			if err := m.Delete(key); err != nil {
-				log.Error().Err(err).Msg("Failed to delete key")
+				slog.Error("Failed to delete key", "key", key, "err", err.Error())
 				return
 			}
 
-			log.Debug().Str("key", key).Dur("duration", ttl).Msg("Key deleted")
+			slog.Debug("Key deleted", "key", key, "duration", ttl)
 		})
 	}
 
 	return nil
-}
-
-func (m *Memory[T]) Get(key string) (T, error) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	return m.data[key], nil
 }
 
 func (m *Memory[T]) Delete(key string) error {
@@ -53,11 +46,4 @@ func (m *Memory[T]) Exists(key string) (bool, error) {
 	_, ok := m.data[key]
 	m.mu.Unlock()
 	return ok, nil
-}
-
-func (m *Memory[T]) Flush() error {
-	m.mu.Lock()
-	m.data = make(map[string]T)
-	m.mu.Unlock()
-	return nil
 }

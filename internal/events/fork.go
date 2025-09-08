@@ -2,7 +2,6 @@ package events
 
 import (
 	"fmt"
-	"webhook/internal/context"
 	"webhook/internal/structs/discord"
 	"webhook/internal/structs/github"
 )
@@ -12,7 +11,7 @@ type fork struct {
 	Forkee github.Forkee `json:"forkee"`
 }
 
-func (e *fork) handle(*context.Context) (*discord.Webhook, error) {
+func (e *fork) handle() (*discord.Webhook, error) {
 	return &discord.Webhook{
 		Content: fmt.Sprintf(
 			"[%s](<%s>) forked [%s](<%s>)",

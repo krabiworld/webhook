@@ -2,14 +2,16 @@ package events
 
 import (
 	"fmt"
+	"log/slog"
 	"slices"
 	"webhook/internal/config"
-	"webhook/internal/context"
 	"webhook/internal/structs/discord"
 	"webhook/internal/structs/github"
-
-	"github.com/rs/zerolog/log"
 )
+
+var ignoredChecks = []string{
+	"GitHub Advanced Security",
+}
 
 type checkRun struct {
 	Action     string            `json:"action"`
@@ -17,13 +19,13 @@ type checkRun struct {
 	Repository github.Repository `json:"repository"`
 }
 
-func (e *checkRun) handle(ctx *context.Context) (*discord.Webhook, error) {
+func (e *checkRun) handle() (*discord.Webhook, error) {
 	if e.Action != "completed" || e.CheckRun.Conclusion == "" || e.CheckRun.App.Name == "GitHub Actions" {
 		return nil, nil
 	}
 
-	if slices.Contains(config.Get().IgnoredChecks, e.CheckRun.App.Name) || slices.Contains(ctx.IgnoredChecks(), e.CheckRun.App.Name) {
-		log.Debug().Str("check", e.CheckRun.App.Name).Msg("Ignored check")
+	if slices.Contains(ignoredChecks, e.CheckRun.App.Name) {
+		slog.Debug("Ignored check", "check", e.CheckRun.App.Name)
 		return nil, nil
 	}
 

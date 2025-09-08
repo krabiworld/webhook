@@ -2,14 +2,13 @@ package client
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"os"
 	"strings"
 	"webhook/internal/structs/discord"
-
-	"github.com/bytedance/sonic"
-	"github.com/rs/zerolog/log"
 )
 
 const baseURL = "https://discord.com/api"
@@ -24,15 +23,15 @@ func Init() {
 
 	client = &http.Client{}
 
-	log.Info().Msg("Client initialized")
+	slog.Info("Client initialized")
 }
 
 func ExecuteWebhook(eventResult *discord.Webhook, creds discord.Credentials) error {
 	url := fmt.Sprintf("%s/webhooks/%s/%s", baseURL, creds.ID, creds.Token)
 
-	body, err := sonic.Marshal(eventResult)
+	body, err := json.Marshal(eventResult)
 	if err != nil {
-		return fmt.Errorf("sonic.Marshal: %w", err)
+		return fmt.Errorf("json.Marshal: %w", err)
 	}
 
 	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(body))
@@ -48,7 +47,7 @@ func ExecuteWebhook(eventResult *discord.Webhook, creds discord.Credentials) err
 	}
 	defer func() {
 		if err := resp.Body.Close(); err != nil {
-			log.Error().Err(err).Msg("Failed to close response body")
+			slog.Error("Failed to close response body", "err", err.Error())
 		}
 	}()
 

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
-	"webhook/internal/context"
 	"webhook/internal/structs/discord"
 	"webhook/internal/structs/github"
 )
@@ -17,7 +16,7 @@ type push struct {
 	Repository github.Repository `json:"repository"`
 }
 
-func (e *push) handle(*context.Context) (*discord.Webhook, error) {
+func (e *push) handle() (*discord.Webhook, error) {
 	if len(e.Commits) == 0 {
 		return nil, nil
 	}

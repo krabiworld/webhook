@@ -1,44 +1,36 @@
 package logger
 
 import (
+	"log/slog"
 	"os"
 	"path/filepath"
-	"strconv"
 	"webhook/internal/config"
-
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
 )
 
 func Init() {
-	// Enable unix time format
-	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
-
-	// Change caller format
-	zerolog.CallerMarshalFunc = func(pc uintptr, file string, line int) string {
-		return filepath.Base(file) + ":" + strconv.Itoa(line)
-	}
-
-	log.Logger = log.With().Caller().Logger()
-
-	// Set log mode
-	logMode := config.Get().LogMode
-
-	if logMode == "pretty" {
-		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout})
-	} else if logMode != "json" {
-		log.Fatal().Str("logMode", logMode).Msg("Unsupported log mode")
-	}
-
-	// Set log level
 	logLevel := config.Get().LogLevel
 
-	var zeroLogLevel zerolog.Level
-	if err := zeroLogLevel.UnmarshalText([]byte(logLevel)); err != nil {
-		log.Fatal().Err(err).Msg("Failed to unmarshal log level")
+	var slogLogLevel slog.Level
+	if err := slogLogLevel.UnmarshalText([]byte(logLevel)); err != nil {
+		slog.Error("Failed to unmarshal log level", "err", err.Error())
+		os.Exit(1)
 	}
 
-	zerolog.SetGlobalLevel(zeroLogLevel)
+	handler := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
+		AddSource: true,
+		Level:     slogLogLevel,
+		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
+			if a.Key == slog.SourceKey {
+				source, _ := a.Value.Any().(*slog.Source)
+				if source != nil {
+					source.File = filepath.Base(source.File)
+				}
+			}
+			return a
+		},
+	})
 
-	log.Info().Str("logLevel", logLevel).Str("logMode", logMode).Msg("Logger initialized")
+	slog.SetDefault(slog.New(handler))
+
+	slog.Info("Logger initialized", "logLevel", slogLogLevel)
 }

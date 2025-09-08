@@ -3,7 +3,6 @@ package events
 import (
 	"fmt"
 	"strings"
-	"webhook/internal/context"
 	"webhook/internal/structs/discord"
 	"webhook/internal/structs/github"
 )
@@ -15,7 +14,7 @@ type pullRequest struct {
 	Sender      github.User        `json:"sender"`
 }
 
-func (e *pullRequest) handle(*context.Context) (*discord.Webhook, error) {
+func (e *pullRequest) handle() (*discord.Webhook, error) {
 	if strings.Contains(e.Action, "_") || e.Action == "synchronize" {
 		return nil, nil
 	}

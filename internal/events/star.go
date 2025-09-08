@@ -2,14 +2,12 @@ package events
 
 import (
 	"fmt"
+	"log/slog"
 	"time"
 	"webhook/internal/config"
-	"webhook/internal/context"
 	"webhook/internal/debouncer"
 	"webhook/internal/structs/discord"
 	"webhook/internal/structs/github"
-
-	"github.com/rs/zerolog/log"
 )
 
 type star struct {
@@ -18,14 +16,14 @@ type star struct {
 	Repository github.Repository `json:"repository"`
 }
 
-func (e *star) handle(*context.Context) (*discord.Webhook, error) {
+func (e *star) handle() (*discord.Webhook, error) {
 	if e.Action != "created" {
 		return nil, nil
 	}
 
 	ok := debouncer.Debounce("star", e.Sender.Login, e.Repository.Name, time.Hour*24)
 	if !ok {
-		log.Debug().Str("repository", e.Repository.Name).Str("username", e.Sender.Login).Msg("Event is currently debounced")
+		slog.Debug("Event is currently debounced", "repository", e.Repository.Name, "username", e.Sender.Login)
 		return nil, nil
 	}
 
