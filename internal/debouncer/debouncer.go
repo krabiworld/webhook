@@ -2,36 +2,39 @@ package debouncer
 
 import (
 	"log/slog"
+	"sync"
 	"time"
-	"webhook/internal/cache"
 )
 
 type Debouncer struct {
-	cache.Cache[bool]
+	mu   sync.Mutex
+	data map[string]bool
 }
 
-var debouncer *Debouncer
-
-func Init() {
-	debouncer = &Debouncer{cache.NewMemory[bool]()}
-
-	slog.Info("Debouncer initialized")
-}
+var debouncer = &Debouncer{data: make(map[string]bool)}
 
 func Debounce(event, username, repository string, ttl time.Duration) bool {
 	key := event + "-" + username + "-" + repository
 
-	if ok, _ := debouncer.Exists(key); ok {
+	debouncer.mu.Lock()
+
+	if _, ok := debouncer.data[key]; ok {
+		debouncer.mu.Unlock()
 		return false
 	}
 
-	err := debouncer.Set(key, true, ttl)
-	if err != nil {
-		slog.Error(err.Error(), "key", key)
-		return false
-	}
+	debouncer.data[key] = true
+	debouncer.mu.Unlock()
 
-	slog.Debug("Event debounced", "key", key, "duration", ttl)
+	time.AfterFunc(ttl, func() {
+		debouncer.mu.Lock()
+		delete(debouncer.data, key)
+		debouncer.mu.Unlock()
+
+		slog.Debug("Event released from debouncer", "key", key, "ttl", ttl)
+	})
+
+	slog.Debug("Event debounced", "key", key, "ttl", ttl)
 
 	return true
 }

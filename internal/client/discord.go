@@ -14,17 +14,13 @@ import (
 
 const baseURL = "https://discord.com/api"
 
-var client *http.Client
+var client = &http.Client{}
 
-func Init() {
+func init() {
 	// Add support for socks5 in http_proxy and all_proxy
 	if proxy := proxyFromEnv("HTTP_PROXY", "ALL_PROXY"); proxy != "" {
 		_ = os.Setenv("HTTPS_PROXY", proxy)
 	}
-
-	client = &http.Client{}
-
-	slog.Info("Client initialized")
 }
 
 func ExecuteWebhook(eventResult *discord.Webhook, creds discord.Credentials) error {
