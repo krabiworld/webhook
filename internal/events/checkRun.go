@@ -10,6 +10,7 @@ import (
 )
 
 var ignoredChecks = []string{
+	"Dependabot",
 	"GitHub Advanced Security",
 }
 
