@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 	"webhook/internal/structs/discord"
 )
 
@@ -41,10 +42,21 @@ func ExecuteWebhook(eventResult *discord.Webhook, creds discord.Credentials) err
 
 	req.Header.Set("Content-Type", "application/json")
 
-	resp, err := client.Do(req)
+	var resp *http.Response
+
+	for i := 0; i < 10; i++ {
+		resp, err = client.Do(req)
+		if err == nil {
+			break
+		}
+		slog.Warn("request failed, retrying...", "attempt", i+1, "err", err.Error())
+		time.Sleep(time.Second)
+	}
+
 	if err != nil {
 		return fmt.Errorf("could not send request: %w", err)
 	}
+
 	defer func() {
 		if err := resp.Body.Close(); err != nil {
 			slog.Error("Failed to close response body", "err", err.Error())
