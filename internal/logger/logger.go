@@ -10,15 +10,15 @@ import (
 func Init() {
 	logLevel := config.Get().LogLevel
 
-	var slogLogLevel slog.Level
-	if err := slogLogLevel.UnmarshalText([]byte(logLevel)); err != nil {
+	var slogLevel slog.Level
+	if err := slogLevel.UnmarshalText([]byte(logLevel)); err != nil {
 		slog.Error("Failed to unmarshal log level, using default level", "err", err.Error())
-		slogLogLevel = slog.LevelInfo
+		slogLevel = slog.LevelInfo
 	}
 
 	handler := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
 		AddSource: true,
-		Level:     slogLogLevel,
+		Level:     slogLevel,
 		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
 			if a.Key == slog.SourceKey {
 				source, _ := a.Value.Any().(*slog.Source)
@@ -32,5 +32,5 @@ func Init() {
 
 	slog.SetDefault(slog.New(handler))
 
-	slog.Info("Logger initialized", "logLevel", slogLogLevel)
+	slog.Info("Logger initialized", "logLevel", slogLevel)
 }
