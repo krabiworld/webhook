@@ -41,12 +41,6 @@ func Webhook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	parts := strings.Split(strings.TrimPrefix(r.URL.Path, "/"), "/")
-	if len(parts) != 2 || parts[0] == "" || parts[1] == "" {
-		http.Error(w, "Path must be in format /:id/:token", http.StatusBadRequest)
-		return
-	}
-
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		slog.Error("Failed to read body", "err", err.Error())

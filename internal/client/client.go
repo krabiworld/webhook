@@ -18,8 +18,18 @@ var client = &http.Client{}
 
 func init() {
 	// Add support for socks5 in http_proxy and all_proxy
-	if proxy := proxyFromEnv("HTTP_PROXY", "ALL_PROXY"); proxy != "" {
-		_ = os.Setenv("HTTPS_PROXY", proxy)
+	for _, key := range []string{"HTTP_PROXY", "ALL_PROXY"} {
+		var val string
+		if v, ok := os.LookupEnv(key); ok {
+			val = v
+		} else {
+			val = os.Getenv(strings.ToLower(key))
+		}
+
+		if strings.HasPrefix(val, "socks5://") {
+			_ = os.Setenv("HTTPS_PROXY", val)
+			break
+		}
 	}
 }
 
@@ -28,7 +38,7 @@ func ExecuteWebhook(eventResult *discord.Webhook, creds discord.Credentials) err
 
 	body, err := json.Marshal(eventResult)
 	if err != nil {
-		return fmt.Errorf("json.Marshal: %w", err)
+		return fmt.Errorf("failed to marshal event: %w", err)
 	}
 
 	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(body))
@@ -66,20 +76,4 @@ func ExecuteWebhook(eventResult *discord.Webhook, creds discord.Credentials) err
 	}
 
 	return nil
-}
-
-func getenvInsensitive(key string) string {
-	if v := os.Getenv(key); v != "" {
-		return v
-	}
-	return os.Getenv(strings.ToLower(key))
-}
-
-func proxyFromEnv(keys ...string) string {
-	for _, key := range keys {
-		if val := getenvInsensitive(key); strings.HasPrefix(val, "socks5://") {
-			return val
-		}
-	}
-	return ""
 }

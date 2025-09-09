@@ -12,8 +12,8 @@ func Init() {
 
 	var slogLogLevel slog.Level
 	if err := slogLogLevel.UnmarshalText([]byte(logLevel)); err != nil {
-		slog.Error("Failed to unmarshal log level", "err", err.Error())
-		os.Exit(1)
+		slog.Error("Failed to unmarshal log level, using default level", "err", err.Error())
+		slogLogLevel = slog.LevelInfo
 	}
 
 	handler := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
