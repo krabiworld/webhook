@@ -2,10 +2,17 @@ package events
 
 import (
 	"fmt"
+	"log/slog"
+	"slices"
 	"strings"
 	"webhook/internal/structs/discord"
 	"webhook/internal/structs/github"
 )
+
+var ignoredActions = []string{
+	"labeled",
+	"synchronize",
+}
 
 type pullRequest struct {
 	Action      string             `json:"action"`
@@ -15,7 +22,12 @@ type pullRequest struct {
 }
 
 func (e *pullRequest) handle() (*discord.Webhook, error) {
-	if strings.Contains(e.Action, "_") || e.Action == "synchronize" {
+	if strings.Contains(e.Action, "_") {
+		return nil, nil
+	}
+
+	if slices.Contains(ignoredActions, e.Action) {
+		slog.Debug("Ignoring action", "action", e.Action)
 		return nil, nil
 	}
 

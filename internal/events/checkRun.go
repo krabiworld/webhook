@@ -11,6 +11,7 @@ import (
 
 var ignoredChecks = []string{
 	"Dependabot",
+	"GitHub Actions",
 	"GitHub Advanced Security",
 }
 
@@ -21,12 +22,12 @@ type checkRun struct {
 }
 
 func (e *checkRun) handle() (*discord.Webhook, error) {
-	if e.Action != "completed" || e.CheckRun.Conclusion == "" || e.CheckRun.App.Name == "GitHub Actions" {
+	if e.Action != "completed" || e.CheckRun.Conclusion == "" {
 		return nil, nil
 	}
 
 	if slices.Contains(ignoredChecks, e.CheckRun.App.Name) {
-		slog.Debug("Ignored check", "check", e.CheckRun.App.Name)
+		slog.Debug("Ignoring check", "check", e.CheckRun.App.Name)
 		return nil, nil
 	}
 
