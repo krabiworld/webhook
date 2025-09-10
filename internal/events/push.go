@@ -9,7 +9,11 @@ import (
 )
 
 type push struct {
-	Commits    []github.Commit   `json:"commits"`
+	Commits []struct {
+		Id      string `json:"id"`
+		Url     string `json:"url"`
+		Message string `json:"message"`
+	} `json:"commits"`
 	Ref        string            `json:"ref"`
 	Sender     github.User       `json:"sender"`
 	Pusher     github.User       `json:"pusher"`

@@ -97,22 +97,25 @@ All environment variables are optional.
 | `SUCCESS_EMOJI` | Emoji displayed for successful workflows or checks.                         |               | ✨ or `<:catgood:1399709119304306747>`    |
 | `FAILURE_EMOJI` | Emoji displayed for failed workflows or checks.                             |               | 😭 or `<:catscream:1399709119304306748>` |
 
+## Events
+
+| API name        | UI name            |
+|-----------------|--------------------|
+| `check_run`     | Check runs         |
+| `fork`          | Forks              |
+| `issue_comment` | Issue comments     |
+| `issues`        | Issues             |
+| `public`        | Visibility changes |
+| `pull_request`  | Pull requests      |
+| `push`          | Pushes             |
+| `release`       | Releases           |
+| `star`          | Stars              |
+| `workflow_run`  | Workflow runs      |
+
 ## Endpoints
 
 - GET: `/health`
 - POST: `/:id/:token`
-
-## Implemented events
-
-- `check_run`
-- `fork`
-- `issue_comment`
-- `issues`
-- `pull_request`
-- `push`
-- `release`
-- `star`
-- `workflow_run`
 
 ## Proxy support
 

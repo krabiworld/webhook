@@ -16,8 +16,17 @@ var ignoredChecks = []string{
 }
 
 type checkRun struct {
-	Action     string            `json:"action"`
-	CheckRun   github.CheckRun   `json:"check_run"`
+	Action   string `json:"action"`
+	CheckRun struct {
+		Conclusion string `json:"conclusion"`
+		HtmlUrl    string `json:"html_url"`
+		App        struct {
+			Name string `json:"name"`
+		} `json:"app"`
+		CheckSuite struct {
+			HeadBranch string `json:"head_branch"`
+		} `json:"check_suite"`
+	} `json:"check_run"`
 	Repository github.Repository `json:"repository"`
 }
 

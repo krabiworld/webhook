@@ -7,9 +7,12 @@ import (
 )
 
 type release struct {
-	Action  string         `json:"action"`
-	Release github.Release `json:"release"`
-	Sender  github.User    `json:"sender"`
+	Action  string `json:"action"`
+	Release struct {
+		HtmlUrl string `json:"html_url"`
+		TagName string `json:"tag_name"`
+	} `json:"release"`
+	Sender github.User `json:"sender"`
 }
 
 func (e *release) handle() (*discord.Webhook, error) {

@@ -16,10 +16,16 @@ var ignoredWorkflows = []string{
 }
 
 type workflowRun struct {
-	Action      string             `json:"action"`
-	Workflow    github.Workflow    `json:"workflow"`
-	WorkflowRun github.WorkflowRun `json:"workflow_run"`
-	Repository  github.Repository  `json:"repository"`
+	Action   string `json:"action"`
+	Workflow struct {
+		Name string `json:"name"`
+	} `json:"workflow"`
+	WorkflowRun struct {
+		Conclusion string `json:"conclusion"`
+		HtmlUrl    string `json:"html_url"`
+		HeadBranch string `json:"head_branch"`
+	} `json:"workflow_run"`
+	Repository github.Repository `json:"repository"`
 }
 
 func (e *workflowRun) handle() (*discord.Webhook, error) {

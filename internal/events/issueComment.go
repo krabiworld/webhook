@@ -7,8 +7,11 @@ import (
 )
 
 type issueComment struct {
-	Action     string            `json:"action"`
-	Comment    github.Comment    `json:"comment"`
+	Action  string `json:"action"`
+	Comment struct {
+		Body    string `json:"body"`
+		HtmlUrl string `json:"html_url"`
+	} `json:"comment"`
 	Issue      github.Issue      `json:"issue"`
 	Repository github.Repository `json:"repository"`
 	Sender     github.User       `json:"sender"`

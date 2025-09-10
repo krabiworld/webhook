@@ -7,8 +7,11 @@ import (
 )
 
 type fork struct {
-	Sender github.User   `json:"sender"`
-	Forkee github.Forkee `json:"forkee"`
+	Forkee struct {
+		Name    string `json:"name"`
+		HtmlUrl string `json:"html_url"`
+	} `json:"forkee"`
+	Sender github.User `json:"sender"`
 }
 
 func (e *fork) handle() (*discord.Webhook, error) {

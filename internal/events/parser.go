@@ -24,6 +24,7 @@ var eventParsers = map[string]func([]byte) (*discord.Webhook, error){
 	"fork":          parseEvent[*fork],
 	"issue_comment": parseEvent[*issueComment],
 	"issues":        parseEvent[*issues],
+	"public":        parseEvent[*public],
 	"pull_request":  parseEvent[*pullRequest],
 	"push":          parseEvent[*push],
 	"release":       parseEvent[*release],

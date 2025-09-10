@@ -15,10 +15,10 @@ var ignoredActions = []string{
 }
 
 type pullRequest struct {
-	Action      string             `json:"action"`
-	PullRequest github.PullRequest `json:"pull_request"`
-	Repository  github.Repository  `json:"repository"`
-	Sender      github.User        `json:"sender"`
+	Action      string            `json:"action"`
+	PullRequest github.Issue      `json:"pull_request"`
+	Repository  github.Repository `json:"repository"`
+	Sender      github.User       `json:"sender"`
 }
 
 func (e *pullRequest) handle() (*discord.Webhook, error) {
