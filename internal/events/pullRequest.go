@@ -9,7 +9,7 @@ import (
 	"webhook/internal/structs/github"
 )
 
-var ignoredActions = []string{
+var ignoredPullRequestActions = []string{
 	"labeled",
 	"synchronize",
 }
@@ -26,7 +26,7 @@ func (e *pullRequest) handle() (*discord.Webhook, error) {
 		return nil, nil
 	}
 
-	if slices.Contains(ignoredActions, e.Action) {
+	if slices.Contains(ignoredPullRequestActions, e.Action) {
 		slog.Debug("Ignoring action", "action", e.Action)
 		return nil, nil
 	}
