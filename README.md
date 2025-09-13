@@ -109,6 +109,7 @@ All environment variables are optional.
 | `pull_request`  | Pull requests      |
 | `push`          | Pushes             |
 | `release`       | Releases           |
+| `repository`    | Repositories       |
 | `star`          | Stars              |
 | `workflow_run`  | Workflow runs      |
 
