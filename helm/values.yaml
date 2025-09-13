@@ -1,20 +1,12 @@
 config:
   LOG_LEVEL: "info"
-  LOG_MODE: "json"
   ADDR: "0.0.0.0:8080"
-  STORAGE_BACKEND: "memory"
   HAPPY_EMOJI: ""
   SUCCESS_EMOJI: ""
   FAILURE_EMOJI: ""
-  DISABLED_EVENTS: ""
-  IGNORE_PRIVATE_REPOSITORIES: ""
-  IGNORED_REPOSITORIES: ""
-  IGNORED_CHECKS: ""
-  IGNORED_WORKFLOWS: ""
 
 secret:
   SECRET: ""
-  REDIS_URL: ""
 
 # This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
 replicaCount: 1
