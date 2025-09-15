@@ -18,9 +18,9 @@ func Init() {
 		LogLevel:     env("LOG_LEVEL", "info"),
 		Address:      env("ADDR", ":8080"),
 		Secret:       env("SECRET"),
-		HappyEmoji:   env("HAPPY_EMOJI"),
-		SuccessEmoji: env("SUCCESS_EMOJI"),
-		FailureEmoji: env("FAILURE_EMOJI"),
+		HappyEmoji:   env("HAPPY_EMOJI", "🥳"),
+		SuccessEmoji: env("SUCCESS_EMOJI", "🥖"),
+		FailureEmoji: env("FAILURE_EMOJI", "😭"),
 	}
 }
 
