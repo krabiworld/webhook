@@ -99,19 +99,19 @@ All environment variables are optional.
 
 ## Events
 
-| API name        | UI name            |
-|-----------------|--------------------|
-| `check_run`     | Check runs         |
-| `fork`          | Forks              |
-| `issue_comment` | Issue comments     |
-| `issues`        | Issues             |
-| `public`        | Visibility changes |
-| `pull_request`  | Pull requests      |
-| `push`          | Pushes             |
-| `release`       | Releases           |
-| `repository`    | Repositories       |
-| `star`          | Stars              |
-| `workflow_run`  | Workflow runs      |
+| API name        | UI name            | Supported actions                                    | Notes                                                                                         |
+|-----------------|--------------------|------------------------------------------------------|-----------------------------------------------------------------------------------------------|
+| `check_run`     | Check runs         | `completed`                                          | Ignores these checks: `Dependabot`, `GitHub Actions` and `GitHub Advanced Security`           |
+| `fork`          | Forks              |                                                      |                                                                                               |
+| `issue_comment` | Issue comments     | All                                                  |                                                                                               |
+| `issues`        | Issues             | All                                                  |                                                                                               |
+| `public`        | Visibility changes |                                                      |                                                                                               |
+| `pull_request`  | Pull requests      | All except `labeled` and `synchronize`               |                                                                                               |
+| `push`          | Pushes             |                                                      |                                                                                               |
+| `release`       | Releases           | `published`                                          |                                                                                               |
+| `repository`    | Repositories       | `archived`, `privatized`, `renamed` and `unarchived` |                                                                                               |
+| `star`          | Stars              | `created`                                            |                                                                                               |
+| `workflow_run`  | Workflow runs      | `completed`                                          | Ignores these workflows: `CodeQL`, `Dependabot Updates` and `Automatic Dependency Submission` |
 
 ## Endpoints
 
