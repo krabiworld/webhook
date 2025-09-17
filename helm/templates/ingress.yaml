@@ -2,13 +2,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "webhook.fullname" . }}
-  labels:
-    {{- include "webhook.labels" . | nindent 4 }}
-  {{- with .Values.ingress.annotations }}
-  annotations:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
+  name: {{ .Release.Name }}
 spec:
   {{- with .Values.ingress.className }}
   ingressClassName: {{ . }}
@@ -35,7 +29,7 @@ spec:
             {{- end }}
             backend:
               service:
-                name: {{ include "webhook.fullname" $ }}
+                name: {{ .Release.Name }}
                 port:
                   number: {{ $.Values.service.port }}
           {{- end }}
