@@ -10,7 +10,7 @@ import (
 	"net/http"
 	"strings"
 	"webhook/internal/config"
-	"webhook/internal/events"
+	"webhook/internal/parser"
 	"webhook/internal/structs/discord"
 )
 
@@ -83,5 +83,5 @@ func Webhook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusNoContent)
-	go events.Parse(eventHeader, body, discord.Credentials{ID: r.PathValue("id"), Token: r.PathValue("token")})
+	go parser.Parse(eventHeader, body, discord.Credentials{ID: r.PathValue("id"), Token: r.PathValue("token")})
 }

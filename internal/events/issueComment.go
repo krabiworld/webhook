@@ -6,7 +6,7 @@ import (
 	"webhook/internal/structs/github"
 )
 
-type issueComment struct {
+type IssueComment struct {
 	Action  string `json:"action"`
 	Comment struct {
 		Body    string `json:"body"`
@@ -17,7 +17,7 @@ type issueComment struct {
 	Sender     github.User       `json:"sender"`
 }
 
-func (e *issueComment) handle() (*discord.Webhook, error) {
+func (e *IssueComment) Handle() (*discord.Webhook, error) {
 	return &discord.Webhook{
 		Content: fmt.Sprintf(
 			"[%s](<%s>) %s comment on issue [%s](<%s>) in [%s](<%s>)/[%s](<%s>)",

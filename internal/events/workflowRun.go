@@ -15,7 +15,7 @@ var ignoredWorkflows = []string{
 	"Automatic Dependency Submission",
 }
 
-type workflowRun struct {
+type WorkflowRun struct {
 	Action   string `json:"action"`
 	Workflow struct {
 		Name string `json:"name"`
@@ -28,7 +28,7 @@ type workflowRun struct {
 	Repository github.Repository `json:"repository"`
 }
 
-func (e *workflowRun) handle() (*discord.Webhook, error) {
+func (e *WorkflowRun) Handle() (*discord.Webhook, error) {
 	if e.Action != "completed" || e.WorkflowRun.Conclusion == "" {
 		return nil, nil
 	}

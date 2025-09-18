@@ -7,12 +7,12 @@ import (
 	"webhook/internal/structs/github"
 )
 
-type public struct {
+type Public struct {
 	Repository github.Repository `json:"repository"`
 	Sender     github.User       `json:"sender"`
 }
 
-func (e *public) handle() (*discord.Webhook, error) {
+func (e *Public) Handle() (*discord.Webhook, error) {
 	return &discord.Webhook{
 		Content: fmt.Sprintf(
 			"[%s](<%s>) made [%s](<%s>) public %s",

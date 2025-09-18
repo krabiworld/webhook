@@ -14,14 +14,14 @@ var ignoredPullRequestActions = []string{
 	"synchronize",
 }
 
-type pullRequest struct {
+type PullRequest struct {
 	Action      string            `json:"action"`
 	PullRequest github.Issue      `json:"pull_request"`
 	Repository  github.Repository `json:"repository"`
 	Sender      github.User       `json:"sender"`
 }
 
-func (e *pullRequest) handle() (*discord.Webhook, error) {
+func (e *PullRequest) Handle() (*discord.Webhook, error) {
 	if strings.Contains(e.Action, "_") {
 		return nil, nil
 	}

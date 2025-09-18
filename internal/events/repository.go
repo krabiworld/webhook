@@ -17,7 +17,7 @@ var supportedRepositoryActions = []string{
 	"unarchived",
 }
 
-type repository struct {
+type Repository struct {
 	Action  string `json:"action"`
 	Changes *struct {
 		Repository struct {
@@ -30,7 +30,7 @@ type repository struct {
 	Sender     github.User       `json:"sender"`
 }
 
-func (e *repository) handle() (*discord.Webhook, error) {
+func (e *Repository) Handle() (*discord.Webhook, error) {
 	if !slices.Contains(supportedRepositoryActions, e.Action) {
 		slog.Debug("Ignoring action", "action", e.Action)
 		return nil, nil

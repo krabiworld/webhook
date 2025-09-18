@@ -15,7 +15,7 @@ var ignoredChecks = []string{
 	"GitHub Advanced Security",
 }
 
-type checkRun struct {
+type CheckRun struct {
 	Action   string `json:"action"`
 	CheckRun struct {
 		Conclusion string `json:"conclusion"`
@@ -30,7 +30,7 @@ type checkRun struct {
 	Repository github.Repository `json:"repository"`
 }
 
-func (e *checkRun) handle() (*discord.Webhook, error) {
+func (e *CheckRun) Handle() (*discord.Webhook, error) {
 	if e.Action != "completed" || e.CheckRun.Conclusion == "" {
 		return nil, nil
 	}

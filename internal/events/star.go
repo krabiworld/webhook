@@ -10,13 +10,13 @@ import (
 	"webhook/internal/structs/github"
 )
 
-type star struct {
+type Star struct {
 	Action     string            `json:"action"`
 	Sender     github.User       `json:"sender"`
 	Repository github.Repository `json:"repository"`
 }
 
-func (e *star) handle() (*discord.Webhook, error) {
+func (e *Star) Handle() (*discord.Webhook, error) {
 	if e.Action != "created" {
 		return nil, nil
 	}

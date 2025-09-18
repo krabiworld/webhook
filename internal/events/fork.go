@@ -6,7 +6,7 @@ import (
 	"webhook/internal/structs/github"
 )
 
-type fork struct {
+type Fork struct {
 	Forkee struct {
 		Name    string `json:"name"`
 		HtmlUrl string `json:"html_url"`
@@ -14,7 +14,7 @@ type fork struct {
 	Sender github.User `json:"sender"`
 }
 
-func (e *fork) handle() (*discord.Webhook, error) {
+func (e *Fork) Handle() (*discord.Webhook, error) {
 	return &discord.Webhook{
 		Content: fmt.Sprintf(
 			"[%s](<%s>) forked [%s](<%s>)",

@@ -8,7 +8,7 @@ import (
 	"webhook/internal/structs/github"
 )
 
-type push struct {
+type Push struct {
 	Commits []struct {
 		Id      string `json:"id"`
 		Url     string `json:"url"`
@@ -20,7 +20,7 @@ type push struct {
 	Repository github.Repository `json:"repository"`
 }
 
-func (e *push) handle() (*discord.Webhook, error) {
+func (e *Push) Handle() (*discord.Webhook, error) {
 	if len(e.Commits) == 0 {
 		return nil, nil
 	}

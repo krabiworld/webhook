@@ -6,7 +6,7 @@ import (
 	"webhook/internal/structs/github"
 )
 
-type release struct {
+type Release struct {
 	Action  string `json:"action"`
 	Release struct {
 		HtmlUrl string `json:"html_url"`
@@ -15,7 +15,7 @@ type release struct {
 	Sender github.User `json:"sender"`
 }
 
-func (e *release) handle() (*discord.Webhook, error) {
+func (e *Release) Handle() (*discord.Webhook, error) {
 	if e.Action != "published" {
 		return nil, nil
 	}

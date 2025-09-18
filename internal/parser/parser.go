@@ -1,14 +1,15 @@
-package events
+package parser
 
 import (
 	"encoding/json"
 	"log/slog"
 	"webhook/internal/client"
+	"webhook/internal/events"
 	"webhook/internal/structs/discord"
 )
 
 type Event interface {
-	handle() (*discord.Webhook, error)
+	Handle() (*discord.Webhook, error)
 }
 
 func parseEvent[T Event](body []byte) (*discord.Webhook, error) {
@@ -16,21 +17,21 @@ func parseEvent[T Event](body []byte) (*discord.Webhook, error) {
 	if err := json.Unmarshal(body, &e); err != nil {
 		return nil, err
 	}
-	return e.handle()
+	return e.Handle()
 }
 
 var eventParsers = map[string]func([]byte) (*discord.Webhook, error){
-	"check_run":     parseEvent[*checkRun],
-	"fork":          parseEvent[*fork],
-	"issue_comment": parseEvent[*issueComment],
-	"issues":        parseEvent[*issues],
-	"public":        parseEvent[*public],
-	"pull_request":  parseEvent[*pullRequest],
-	"push":          parseEvent[*push],
-	"release":       parseEvent[*release],
-	"repository":    parseEvent[*repository],
-	"star":          parseEvent[*star],
-	"workflow_run":  parseEvent[*workflowRun],
+	"check_run":     parseEvent[*events.CheckRun],
+	"fork":          parseEvent[*events.Fork],
+	"issue_comment": parseEvent[*events.IssueComment],
+	"issues":        parseEvent[*events.Issues],
+	"public":        parseEvent[*events.Public],
+	"pull_request":  parseEvent[*events.PullRequest],
+	"push":          parseEvent[*events.Push],
+	"release":       parseEvent[*events.Release],
+	"repository":    parseEvent[*events.Repository],
+	"star":          parseEvent[*events.Star],
+	"workflow_run":  parseEvent[*events.WorkflowRun],
 }
 
 func Parse(event string, body []byte, creds discord.Credentials) {
