@@ -8,12 +8,17 @@ import (
 	"webhook/internal/structs/github"
 )
 
+var linkRe = regexp.MustCompile(`\[([^]]+)]\((https?://[^)]+)\)`)
+
 type Push struct {
 	Commits []struct {
 		Id      string `json:"id"`
 		Url     string `json:"url"`
 		Message string `json:"message"`
 	} `json:"commits"`
+	Created    bool              `json:"created"`
+	Deleted    bool              `json:"deleted"`
+	Forced     bool              `json:"forced"`
 	Ref        string            `json:"ref"`
 	Sender     github.User       `json:"sender"`
 	Pusher     github.User       `json:"pusher"`
@@ -21,17 +26,42 @@ type Push struct {
 }
 
 func (e *Push) Handle() (*discord.Webhook, error) {
-	if len(e.Commits) == 0 {
+	if !strings.HasPrefix(e.Ref, "refs/heads/") {
 		return nil, nil
 	}
 
-	linkRe, err := regexp.Compile(`\[([^]]+)]\((https?://[^)]+)\)`)
-	if err != nil {
-		return nil, err
+	action := ""
+	if e.Created {
+		if e.Forced {
+			action = " force"
+		}
+		action += " created branch"
+	} else if e.Deleted {
+		action = " deleted branch"
+	} else if e.Forced {
+		action = " force pushed"
 	}
-	mdRe, err := regexp.Compile(`(?m)^\s*#{1,3}\s+`)
-	if err != nil {
-		return nil, err
+
+	branch := strings.TrimPrefix(e.Ref, "refs/heads/")
+
+	footer := fmt.Sprintf(
+		"\n- [%s](<%s>)%s on [%s](<%s>)/[%s](<%s/tree/%s>)",
+		e.Pusher.Name,
+		e.Sender.HtmlUrl,
+		action,
+		e.Repository.Name,
+		e.Repository.HtmlUrl,
+		branch,
+		e.Repository.HtmlUrl,
+		branch,
+	)
+
+	if len(e.Commits) == 0 {
+		return &discord.Webhook{
+			Content:   strings.TrimPrefix(footer, "\n"),
+			Username:  e.Pusher.Name,
+			AvatarUrl: e.Sender.AvatarUrl,
+		}, nil
 	}
 
 	var commits strings.Builder
@@ -47,23 +77,10 @@ func (e *Push) Handle() (*discord.Webhook, error) {
 			commitMsg += "..."
 		}
 
-		cleanLinkMsg := linkRe.ReplaceAllString(commitMsg, "[$1](<$2>)")
-		cleanMdMsg := mdRe.ReplaceAllString(cleanLinkMsg, "")
+		cleanMsg := linkRe.ReplaceAllString(commitMsg, "[$1](<$2>)")
 
-		commits.WriteString(fmt.Sprintf("[`%s`](<%s>) %s\n", c.Id[:7], c.Url, cleanMdMsg))
+		commits.WriteString(fmt.Sprintf("[`%s`](<%s>) %s\n", c.Id[:7], c.Url, cleanMsg))
 	}
-
-	branch := strings.TrimPrefix(e.Ref, "refs/heads/")
-	footer := fmt.Sprintf(
-		"\n- [%s](<%s>) on [%s](<%s>)/[%s](<%s/tree/%s>)",
-		e.Pusher.Name,
-		e.Sender.HtmlUrl,
-		e.Repository.Name,
-		e.Repository.HtmlUrl,
-		branch,
-		e.Repository.HtmlUrl,
-		branch,
-	)
 
 	limit := 2000 - (len([]rune(footer)) + len("...") + 1)
 	if len([]rune(commits.String())) > limit {
