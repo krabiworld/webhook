@@ -45,7 +45,7 @@ func (e *WorkflowRun) Handle() (*discord.Webhook, error) {
 
 	return &discord.Webhook{
 		Content: fmt.Sprintf(
-			"%s Workflow [%s](<%s>) on [%s](<%s>)/[%[6]s](<%[5]s/tree/%[6]s>)",
+			"%s Workflow [%s](<%s>) on [%s](<%s>)/[%s](<%[5]s/tree/%s>)",
 			emoji,
 			e.WorkflowRun.Conclusion,
 			e.WorkflowRun.HtmlUrl,

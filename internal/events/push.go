@@ -45,13 +45,11 @@ func (e *Push) Handle() (*discord.Webhook, error) {
 	branch := strings.TrimPrefix(e.Ref, "refs/heads/")
 
 	footer := fmt.Sprintf(
-		"\n- [%s](<%s>)%s on [%s](<%s>)/[%s](<%s/tree/%s>)",
+		"\n- [%s](<%s>)%s on [%s](<%s>)/[%s](<%[5]s/tree/%s>)",
 		e.Pusher.Name,
 		e.Sender.HtmlUrl,
 		action,
 		e.Repository.Name,
-		e.Repository.HtmlUrl,
-		branch,
 		e.Repository.HtmlUrl,
 		branch,
 	)

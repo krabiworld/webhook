@@ -47,7 +47,7 @@ func (e *CheckRun) Handle() (*discord.Webhook, error) {
 
 	return &discord.Webhook{
 		Content: fmt.Sprintf(
-			"%s Check [%s](<%s>) on [%s](<%s>)/[%[6]s](<%[5]s/tree/%[6]s>)",
+			"%s Check [%s](<%s>) on [%s](<%s>)/[%s](<%[5]s/tree/%s>)",
 			emoji,
 			e.CheckRun.Conclusion,
 			e.CheckRun.HtmlUrl,

@@ -63,11 +63,10 @@ func (e *Repository) Handle() (*discord.Webhook, error) {
 		))
 	case "renamed":
 		content.WriteString(fmt.Sprintf(
-			"renamed [%s](<%s>) to [%s](<%s>)",
+			"renamed [%s](<%s>) to [%s](<%[2]s>)",
 			e.Changes.Repository.Name.From,
 			e.Repository.HtmlUrl,
 			e.Repository.Name,
-			e.Repository.HtmlUrl,
 		))
 	}
 
