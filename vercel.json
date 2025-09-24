@@ -1,7 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "functions": {
-    "internal/vercel/vercel.go": {}
+    "internal/vercel/vercel.go": {
+      "maxDuration": 30
+    }
   },
   "build": {
     "env": {
