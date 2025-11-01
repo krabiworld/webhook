@@ -115,9 +115,9 @@ jobs:
           ARG TARGETARCH
           COPY ./webhook-linux-${TARGETARCH} /webhook
           COPY --from=certs /tmp/rootCA.pem /etc/ssl/certs/ca-certificates.crt
-          COPY <<EOF /etc/passwd
+          COPY <<EOF2 /etc/passwd
           nobody:x:65534:65534:nobody:/:
-          EOF
+          EOF2
           USER nobody
           CMD ["/webhook"]
           EOF
