@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
+	"gohook/internal/client"
+	"gohook/internal/config"
+	"gohook/internal/server"
 	"os"
 	"os/signal"
 	"syscall"
-	"webhook/internal/client"
-	"webhook/internal/config"
-	"webhook/internal/server"
 )
 
 func main() {

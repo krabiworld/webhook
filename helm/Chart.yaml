@@ -1,6 +1,6 @@
 apiVersion: v2
-name: webhook
-description: A Helm chart for Kubernetes
+name: gohook
+description: A lightweight GitHub webhook proxy for Discord.
 type: application
 version: 0.1.0
 appVersion: "0.0.1"

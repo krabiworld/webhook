@@ -2,8 +2,8 @@ package events
 
 import (
 	"fmt"
-	"webhook/internal/structs/discord"
-	"webhook/internal/structs/github"
+	"gohook/internal/structs/discord"
+	"gohook/internal/structs/github"
 )
 
 type IssueComment struct {

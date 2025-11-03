@@ -2,10 +2,10 @@ package events
 
 import (
 	"fmt"
+	"gohook/internal/structs/discord"
+	"gohook/internal/structs/github"
 	"slices"
 	"strings"
-	"webhook/internal/structs/discord"
-	"webhook/internal/structs/github"
 )
 
 var ignoredPullRequestActions = []string{

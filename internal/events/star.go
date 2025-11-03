@@ -2,11 +2,11 @@ package events
 
 import (
 	"fmt"
+	"gohook/internal/config"
+	"gohook/internal/debouncer"
+	"gohook/internal/structs/discord"
+	"gohook/internal/structs/github"
 	"time"
-	"webhook/internal/config"
-	"webhook/internal/debouncer"
-	"webhook/internal/structs/discord"
-	"webhook/internal/structs/github"
 )
 
 type Star struct {

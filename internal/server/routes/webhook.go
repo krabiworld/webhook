@@ -6,11 +6,11 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"gohook/internal/config"
+	"gohook/internal/parser"
+	"gohook/internal/structs/discord"
 	"mime"
 	"strings"
-	"webhook/internal/config"
-	"webhook/internal/parser"
-	"webhook/internal/structs/discord"
 
 	"github.com/valyala/fasthttp"
 )

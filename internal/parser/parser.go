@@ -1,12 +1,11 @@
 package parser
 
 import (
-	"fmt"
-	"webhook/internal/client"
-	"webhook/internal/events"
-	"webhook/internal/structs/discord"
-
 	"encoding/json"
+	"fmt"
+	"gohook/internal/client"
+	"gohook/internal/events"
+	"gohook/internal/structs/discord"
 )
 
 type Event interface {

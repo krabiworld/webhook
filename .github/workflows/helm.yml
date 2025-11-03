@@ -35,11 +35,11 @@ jobs:
 
       - name: Push chart
         working-directory: dist
-        run: helm push webhook-*.tgz oci://ghcr.io/${{ github.repository_owner }}
+        run: helm push gohook-*.tgz oci://ghcr.io/${{ github.repository_owner }}
 
       - name: Create repository index
         working-directory: dist
-        run: helm repo index . --url https://${{ github.repository_owner }}.github.io/webhook/
+        run: helm repo index . --url https://${{ github.repository_owner }}.github.io/gohook/
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

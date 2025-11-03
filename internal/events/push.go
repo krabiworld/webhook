@@ -2,10 +2,10 @@ package events
 
 import (
 	"fmt"
+	"gohook/internal/structs/discord"
+	"gohook/internal/structs/github"
 	"regexp"
 	"strings"
-	"webhook/internal/structs/discord"
-	"webhook/internal/structs/github"
 )
 
 var linkRe = regexp.MustCompile(`\[([^]]+)]\((https?://[^)]+)\)`)

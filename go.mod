@@ -1,4 +1,4 @@
-module webhook
+module gohook
 
 go 1.25.3
 

@@ -1,12 +1,11 @@
 package client
 
 import (
-	"fmt"
-	"time"
-	"webhook/internal/config"
-	"webhook/internal/structs/discord"
-
 	"encoding/json"
+	"fmt"
+	"gohook/internal/config"
+	"gohook/internal/structs/discord"
+	"time"
 
 	"github.com/valyala/fasthttp"
 	"github.com/valyala/fasthttp/fasthttpproxy"

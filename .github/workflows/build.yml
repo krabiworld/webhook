@@ -43,12 +43,12 @@ jobs:
           export CGO_ENABLED=0
           export GOOS=${{ matrix.os }}
           export GOARCH=${{ matrix.arch }}
-          go build -ldflags="-s -w" -trimpath -o dist/webhook-${{ matrix.os }}-${{ matrix.arch }}${{ matrix.ext }} ./cmd/webhook
+          go build -ldflags="-s -w" -trimpath -o dist/gohook-${{ matrix.os }}-${{ matrix.arch }}${{ matrix.ext }} ./cmd/gohook
 
       - name: Upload binaries
         uses: actions/upload-artifact@v5
         with:
-          name: webhook-${{ matrix.os }}-${{ matrix.arch }}
+          name: gohook-${{ matrix.os }}-${{ matrix.arch }}
           path: dist/*
 
   docker:
@@ -65,15 +65,15 @@ jobs:
       - name: Download amd64 binary
         uses: actions/download-artifact@v6
         with:
-          name: webhook-linux-amd64
+          name: gohook-linux-amd64
 
       - name: Download arm64 binary
         uses: actions/download-artifact@v6
         with:
-          name: webhook-linux-arm64
+          name: gohook-linux-arm64
 
       - name: Fix permissions
-        run: chmod +x ./webhook-linux-amd64 ./webhook-linux-arm64
+        run: chmod +x ./gohook-linux-amd64 ./gohook-linux-arm64
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392 # v3.6.0
@@ -113,13 +113,13 @@ jobs:
           RUN curl -sSL https://i.pki.goog/r4.pem -o /tmp/rootCA.pem
           FROM scratch
           ARG TARGETARCH
-          COPY ./webhook-linux-${TARGETARCH} /webhook
+          COPY ./gohook-linux-${TARGETARCH} /gohook
           COPY --from=certs /tmp/rootCA.pem /etc/ssl/certs/ca-certificates.crt
           COPY <<EOF2 /etc/passwd
           nobody:x:65534:65534:nobody:/:
           EOF2
           USER nobody
-          CMD ["/webhook"]
+          CMD ["/gohook"]
           EOF
 
       - name: Build and push Docker image

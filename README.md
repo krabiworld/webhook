@@ -1,10 +1,10 @@
-# Webhook
+# Gohook
 
-![Build](https://github.com/krabiworld/webhook/actions/workflows/build.yml/badge.svg)
-![Docker Pulls](https://img.shields.io/docker/pulls/krabiworld/webhook)
-![Image Size](https://img.shields.io/docker/image-size/krabiworld/webhook/latest)
-![License](https://img.shields.io/github/license/krabiworld/webhook)
-![GitHub stars](https://img.shields.io/github/stars/krabiworld/webhook?style=social)
+![Build](https://github.com/krabiworld/gohook/actions/workflows/build.yml/badge.svg)
+![Docker Pulls](https://img.shields.io/docker/pulls/krabiworld/gohook)
+![Image Size](https://img.shields.io/docker/image-size/krabiworld/gohook/latest)
+![License](https://img.shields.io/github/license/krabiworld/gohook)
+![GitHub stars](https://img.shields.io/github/stars/krabiworld/gohook?style=social)
 
 A lightweight GitHub webhook proxy for Discord.
 
@@ -13,15 +13,15 @@ A lightweight GitHub webhook proxy for Discord.
 ### Docker
 
 ```shell
-docker run --name webhook -d -p 8080:8080 krabiworld/webhook
+docker run --name gohook -d -p 8080:8080 krabiworld/gohook
 ```
 
 ### Docker Compose
 
 ```yaml
 services:
-  webhook:
-    image: "krabiworld/webhook"
+  gohook:
+    image: "krabiworld/gohook"
     ports:
       - "8080:8080"
 ```
@@ -29,38 +29,38 @@ services:
 ### Kubernetes
 
 ```shell
-helm repo add webhook https://krabiworld.github.io/webhook
-helm install webhook webhook/webhook
+helm repo add gohook https://krabiworld.github.io/gohook
+helm install gohook gohook/gohook
 ```
 
 Or you can use OCI repository:
 
 ```shell
-helm install webhook oci://ghcr.io/krabiworld/webhook
+helm install gohook oci://ghcr.io/krabiworld/gohook
 ```
 
 See [helm/values.yaml](helm/values.yaml)
 
 ### Precompiled binaries
 
-You can download precompiled binaries for Linux, macOS and Windows from the [GitHub Releases](https://github.com/krabiworld/webhook/releases) page.
+You can download precompiled binaries for Linux, macOS and Windows from the [GitHub Releases](https://github.com/krabiworld/gohook/releases) page.
 
 ### Building from source
 
-To build Webhook from source, you only need Go (the version specified in [go.mod](go.mod) or later).
+To build gohook from source, you only need Go (the version specified in [go.mod](go.mod) or later).
 
 Start by cloning the repository:
 
 ```shell
-git clone https://github.com/krabiworld/webhook.git
-cd webhook
+git clone https://github.com/krabiworld/gohook.git
+cd gohook
 ```
 
 Then build the binary and run it:
 
 ```shell
-go build ./cmd/webhook
-./webhook
+go build ./cmd/gohook
+./gohook
 ```
 
 ## Usage
@@ -71,13 +71,13 @@ go build ./cmd/webhook
    3. Copy the webhook URL
 2. Configure GitHub
    1. Go to `https://github.com/<username>/<repository>/settings/hooks/new`
-   2. In **Payload URL**, paste the copied Discord Webhook URL and replace `https://discord.com/api/webhooks` with your webhook proxy URL
+   2. In **Payload URL**, paste the copied Discord Webhook URL and replace `https://discord.com/api/webhooks` with your Gohook URL
     ```text
     Original Discord URL:
     https://discord.com/api/webhooks/123456/abcdef
     
-    Replace with proxy URL:
-    https://webhook.your-domain.com/123456/abcdef
+    Replace with Gohook URL:
+    https://gohook.your-domain.com/123456/abcdef
     ```
    3. In **Content Type**, select `application/json`
    4. In **Secret**, paste your secret (if you set environment variable `SECRET`)

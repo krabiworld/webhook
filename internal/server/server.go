@@ -2,9 +2,9 @@ package server
 
 import (
 	"fmt"
+	"gohook/internal/config"
+	"gohook/internal/server/routes"
 	"os"
-	"webhook/internal/config"
-	"webhook/internal/server/routes"
 
 	"github.com/valyala/fasthttp"
 )

@@ -2,10 +2,10 @@ package events
 
 import (
 	"fmt"
+	"gohook/internal/config"
+	"gohook/internal/structs/discord"
+	"gohook/internal/structs/github"
 	"slices"
-	"webhook/internal/config"
-	"webhook/internal/structs/discord"
-	"webhook/internal/structs/github"
 )
 
 var ignoredChecks = []string{
