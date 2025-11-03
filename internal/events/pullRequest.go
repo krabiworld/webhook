@@ -2,7 +2,6 @@ package events
 
 import (
 	"fmt"
-	"log/slog"
 	"slices"
 	"strings"
 	"webhook/internal/structs/discord"
@@ -27,7 +26,6 @@ func (e *PullRequest) Handle() (*discord.Webhook, error) {
 	}
 
 	if slices.Contains(ignoredPullRequestActions, e.Action) {
-		slog.Debug("Ignoring action", "action", e.Action)
 		return nil, nil
 	}
 

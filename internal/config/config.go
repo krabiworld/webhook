@@ -3,7 +3,7 @@ package config
 import "os"
 
 type Config struct {
-	LogLevel     string
+	Proxy        string
 	Address      string
 	Secret       string
 	HappyEmoji   string
@@ -15,7 +15,7 @@ var cfg *Config
 
 func Init() {
 	cfg = &Config{
-		LogLevel:     env("LOG_LEVEL", "info"),
+		Proxy:        env("HTTPS_PROXY", env("HTTP_PROXY", env("ALL_PROXY"))),
 		Address:      env("ADDR", ":8080"),
 		Secret:       env("SECRET"),
 		HappyEmoji:   env("HAPPY_EMOJI", "🥳"),

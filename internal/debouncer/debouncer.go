@@ -1,7 +1,6 @@
 package debouncer
 
 import (
-	"log/slog"
 	"sync"
 	"time"
 )
@@ -30,11 +29,7 @@ func Debounce(event, username, repository string, ttl time.Duration) bool {
 		debouncer.mu.Lock()
 		delete(debouncer.data, key)
 		debouncer.mu.Unlock()
-
-		slog.Debug("Event released from debouncer", "key", key, "ttl", ttl)
 	})
-
-	slog.Debug("Event debounced", "key", key, "ttl", ttl)
 
 	return true
 }

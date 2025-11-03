@@ -1,5 +1,7 @@
 FROM golang:alpine AS builder
 WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download
 COPY . .
 ENV CGO_ENABLED=0
 ENV GOCACHE=/root/.cache/go-build

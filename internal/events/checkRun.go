@@ -2,7 +2,6 @@ package events
 
 import (
 	"fmt"
-	"log/slog"
 	"slices"
 	"webhook/internal/config"
 	"webhook/internal/structs/discord"
@@ -36,7 +35,6 @@ func (e *CheckRun) Handle() (*discord.Webhook, error) {
 	}
 
 	if slices.Contains(ignoredChecks, e.CheckRun.App.Name) {
-		slog.Debug("Ignoring check", "check", e.CheckRun.App.Name)
 		return nil, nil
 	}
 

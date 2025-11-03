@@ -1,21 +1,27 @@
 package server
 
 import (
-	"log/slog"
-	"net/http"
+	"fmt"
 	"os"
 	"webhook/internal/config"
 	"webhook/internal/server/routes"
+
+	"github.com/valyala/fasthttp"
 )
 
 func Start() {
-	mux := http.NewServeMux()
-	mux.HandleFunc("GET /health", routes.Health)
-	mux.HandleFunc("POST /{id}/{token}", routes.Webhook)
+	handler := func(ctx *fasthttp.RequestCtx) {
+		switch string(ctx.Path()) {
+		case "/health":
+			routes.Health(ctx)
+		default:
+			routes.Webhook(ctx)
+		}
+	}
 
-	err := http.ListenAndServe(config.Get().Address, mux)
+	err := fasthttp.ListenAndServe(config.Get().Address, handler)
 	if err != nil {
-		slog.Error("Failed to start server", "err", err.Error())
+		fmt.Println("Failed to start server:", err)
 		os.Exit(1)
 	}
 }

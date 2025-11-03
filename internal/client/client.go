@@ -1,35 +1,32 @@
 package client
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"log/slog"
-	"net/http"
-	"os"
-	"strings"
 	"time"
+	"webhook/internal/config"
 	"webhook/internal/structs/discord"
+
+	"encoding/json"
+
+	"github.com/valyala/fasthttp"
+	"github.com/valyala/fasthttp/fasthttpproxy"
 )
 
 const baseURL = "https://discord.com/api"
 
-var client = &http.Client{}
+var client *fasthttp.Client
 
-func init() {
-	// Add support for socks5 in http_proxy and all_proxy
-	for _, key := range []string{"HTTP_PROXY", "ALL_PROXY"} {
-		var val string
-		if v, ok := os.LookupEnv(key); ok {
-			val = v
-		} else {
-			val = os.Getenv(strings.ToLower(key))
-		}
+func Init() {
+	client = &fasthttp.Client{
+		ReadTimeout:              time.Millisecond * 500,
+		WriteTimeout:             time.Millisecond * 500,
+		MaxConnDuration:          time.Hour,
+		NoDefaultUserAgentHeader: true,
+	}
 
-		if strings.HasPrefix(val, "socks5://") {
-			_ = os.Setenv("HTTPS_PROXY", val)
-			break
-		}
+	proxy := config.Get().Proxy
+	if proxy != "" {
+		client.Dial = fasthttpproxy.FasthttpHTTPDialerTimeout(proxy, time.Second*2)
 	}
 }
 
@@ -41,38 +38,33 @@ func ExecuteWebhook(eventResult *discord.Webhook, creds discord.Credentials) err
 		return fmt.Errorf("failed to marshal event: %w", err)
 	}
 
-	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(body))
-	if err != nil {
-		return fmt.Errorf("could not create request: %w", err)
-	}
+	req := fasthttp.AcquireRequest()
+	req.SetRequestURI(url)
+	req.Header.SetMethod(fasthttp.MethodPost)
+	req.Header.SetContentType("application/json")
+	req.SetBodyRaw(body)
 
-	req.Header.Set("Content-Type", "application/json")
+	resp := fasthttp.AcquireResponse()
 
-	var resp *http.Response
-
-	for i := 0; i < 10; i++ {
-		resp, err = client.Do(req)
+	for i := range 10 {
+		err = client.Do(req, resp)
 		if err == nil {
 			break
 		}
-		slog.Warn("request failed, retrying...", "attempt", i+1, "err", err.Error())
+		fmt.Println("Request failed, retrying... Attempt", i+1, "Error", err)
 		time.Sleep(time.Second)
 	}
+
+	fasthttp.ReleaseRequest(req)
 
 	if err != nil {
 		return fmt.Errorf("could not send request: %w", err)
 	}
 
-	defer func() {
-		if err := resp.Body.Close(); err != nil {
-			slog.Error("Failed to close response body", "err", err.Error())
-		}
-	}()
+	defer fasthttp.ReleaseResponse(resp)
 
-	if resp.StatusCode != http.StatusNoContent {
-		buf := new(bytes.Buffer)
-		_, _ = buf.ReadFrom(resp.Body)
-		return fmt.Errorf("discord api error: %s", buf.String())
+	if resp.StatusCode() != fasthttp.StatusNoContent {
+		return fmt.Errorf("discord api error: %s", string(resp.Body()))
 	}
 
 	return nil

@@ -1,11 +1,12 @@
 package parser
 
 import (
-	"encoding/json"
-	"log/slog"
+	"fmt"
 	"webhook/internal/client"
 	"webhook/internal/events"
 	"webhook/internal/structs/discord"
+
+	"encoding/json"
 )
 
 type Event interface {
@@ -37,13 +38,12 @@ var eventParsers = map[string]func([]byte) (*discord.Webhook, error){
 func Parse(event string, body []byte, creds discord.Credentials) {
 	parser, ok := eventParsers[event]
 	if !ok {
-		slog.Debug("Unknown event", "event", event)
 		return
 	}
 
 	eventResult, err := parser(body)
 	if err != nil {
-		slog.Error(err.Error(), "event", event)
+		fmt.Println("Parsing error:", err)
 		return
 	}
 
@@ -53,6 +53,6 @@ func Parse(event string, body []byte, creds discord.Credentials) {
 
 	err = client.ExecuteWebhook(eventResult, creds)
 	if err != nil {
-		slog.Error(err.Error(), "event", event)
+		fmt.Println("Client error:", err)
 	}
 }

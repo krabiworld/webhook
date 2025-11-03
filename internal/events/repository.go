@@ -2,7 +2,6 @@ package events
 
 import (
 	"fmt"
-	"log/slog"
 	"slices"
 	"strings"
 	"webhook/internal/config"
@@ -32,7 +31,6 @@ type Repository struct {
 
 func (e *Repository) Handle() (*discord.Webhook, error) {
 	if !slices.Contains(supportedRepositoryActions, e.Action) {
-		slog.Debug("Ignoring action", "action", e.Action)
 		return nil, nil
 	}
 

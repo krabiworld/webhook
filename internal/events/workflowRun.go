@@ -2,7 +2,6 @@ package events
 
 import (
 	"fmt"
-	"log/slog"
 	"slices"
 	"webhook/internal/config"
 	"webhook/internal/structs/discord"
@@ -34,7 +33,6 @@ func (e *WorkflowRun) Handle() (*discord.Webhook, error) {
 	}
 
 	if slices.Contains(ignoredWorkflows, e.Workflow.Name) {
-		slog.Debug("Ignoring workflow", "workflow", e.Workflow.Name)
 		return nil, nil
 	}
 

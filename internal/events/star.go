@@ -2,7 +2,6 @@ package events
 
 import (
 	"fmt"
-	"log/slog"
 	"time"
 	"webhook/internal/config"
 	"webhook/internal/debouncer"
@@ -23,7 +22,6 @@ func (e *Star) Handle() (*discord.Webhook, error) {
 
 	ok := debouncer.Debounce("star", e.Sender.Login, e.Repository.Name, time.Hour*24)
 	if !ok {
-		slog.Debug("Event is currently debounced", "repository", e.Repository.Name, "username", e.Sender.Login)
 		return nil, nil
 	}
 
