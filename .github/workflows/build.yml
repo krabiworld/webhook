@@ -9,6 +9,7 @@ on:
       - '**.go'
       - 'go.mod'
       - 'go.sum'
+      - 'README.md'
 
 jobs:
   build:
@@ -62,6 +63,8 @@ jobs:
       id-token: write
 
     steps:
+      - uses: actions/checkout@v5
+
       - name: Download amd64 binary
         uses: actions/download-artifact@v6
         with:
@@ -140,6 +143,13 @@ jobs:
           subject-name: ghcr.io/${{ github.repository }}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
+
+      - name: Update Docker Hub description
+        uses: peter-evans/dockerhub-description@1b9a80c056b620d92cedb9d9b5a223409c68ddfa # v5
+        with:
+          username: ${{ vars.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+          repository: ${{ github.repository }}
 
   release:
     runs-on: ubuntu-latest
