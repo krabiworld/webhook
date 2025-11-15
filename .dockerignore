@@ -4,7 +4,6 @@
 .env
 .env.example
 .dockerignore
-CODE_OF_CONDUCT.md
 Dockerfile
 LICENSE
 README.md

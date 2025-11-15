@@ -1,8 +1,6 @@
 # Gohook
 
 ![Build](https://github.com/krabiworld/gohook/actions/workflows/build.yml/badge.svg)
-![Docker Pulls](https://img.shields.io/docker/pulls/krabiworld/gohook)
-![Image Size](https://img.shields.io/docker/image-size/krabiworld/gohook/latest)
 ![License](https://img.shields.io/github/license/krabiworld/gohook)
 ![GitHub stars](https://img.shields.io/github/stars/krabiworld/gohook?style=social)
 
@@ -13,7 +11,7 @@ A lightweight GitHub webhook proxy for Discord.
 ### Docker
 
 ```shell
-docker run --name gohook -d -p 8080:8080 krabiworld/gohook
+docker run --name gohook -d -p 8080:8080 ghcr.io/krabiworld/gohook
 ```
 
 ### Docker Compose
@@ -21,7 +19,7 @@ docker run --name gohook -d -p 8080:8080 krabiworld/gohook
 ```yaml
 services:
   gohook:
-    image: "krabiworld/gohook"
+    image: "ghcr.io/krabiworld/gohook"
     ports:
       - "8080:8080"
 ```
