@@ -25,8 +25,7 @@ const (
 func Webhook(ctx *fasthttp.RequestCtx) {
 	mediaType, _, err := mime.ParseMediaType(string(ctx.Request.Header.Peek(fasthttp.HeaderContentType)))
 	if err != nil || mediaType != "application/json" {
-		// w.Header().Set("Accept-Post", "application/json")
-		// w.WriteHeader(http.StatusUnsupportedMediaType)
+		ctx.Response.Header.Set("Accept-Post", "application/json")
 		ctx.SetStatusCode(fasthttp.StatusUnsupportedMediaType)
 		return
 	}

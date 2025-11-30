@@ -1,7 +1,8 @@
 {
 	"name": "Go",
-	"image": "mcr.microsoft.com/devcontainers/go:2.0.3-1.25-bookworm",
+	"image": "mcr.microsoft.com/devcontainers/base:bookworm",
 	"features": {
+		"ghcr.io/devcontainers/features/go:1": {},
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {}
 	}
 }
